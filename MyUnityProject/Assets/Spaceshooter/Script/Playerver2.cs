@@ -54,7 +54,7 @@ public class Player1 : MonoBehaviour
         if (collision.collider.CompareTag("Enemy"))
         {
             //Enemy 태그를 가진 오브젝트와 충돌 하면 -z방향으로 튕겨남
-            ribody.AddForce(Vector3.back * 20f, ForceMode.Impulse);
+            ribody.AddForce(Vector3.back * 50f, ForceMode.Impulse);
         }
     }
     private IEnumerator FireProjectiles()
