@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Net.NetworkInformation;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,6 +13,7 @@ public class Player : MonoBehaviour
     public float damage=10f;//공격력
     public float moveSpeed=5f;//이동속도
     private Enemy enemy;
+    public TextMeshProUGUI Killtext;
     
     public float PhpAmount { get { return hp/playermaxhp; } }
 
@@ -31,6 +33,7 @@ public class Player : MonoBehaviour
         float x = Input.GetAxis("Horizontal");
         float y = Input.GetAxis("Vertical");
         Hpbar.fillAmount = PhpAmount;
+        Killtext.text = $"Killcount : {killcount}";
         Vector2 dir = new Vector2(x, y);
         
         Move(dir);

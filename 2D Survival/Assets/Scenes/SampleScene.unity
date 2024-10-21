@@ -1216,6 +1216,7 @@ MonoBehaviour:
   hp: 100
   damage: 10
   moveSpeed: 5
+  Killtext: {fileID: 1303734629}
   projectilePrefab: {fileID: 5270925405999155720, guid: 1c26eb4b1409790458a8fefe8bd97f37, type: 3}
   Hpbar: {fileID: 1670491601}
 --- !u!50 &1724469004
