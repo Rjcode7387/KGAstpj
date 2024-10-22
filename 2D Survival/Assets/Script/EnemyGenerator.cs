@@ -7,7 +7,7 @@ public class EnemyGenerator : MonoBehaviour
     public GameObject enemyprefabs;
     public float Interval = 1f;
 
-    private void Start()
+    private void Start() 
     {
         StartCoroutine(EnemySpawn());
     }
@@ -15,11 +15,15 @@ public class EnemyGenerator : MonoBehaviour
     private IEnumerator EnemySpawn()
     {
         while (true)
-        {
-            Instantiate(enemyprefabs, transform.position, Quaternion.identity);
-
+        {          
             yield return new WaitForSeconds(Interval);
+
+            Spawn(); 
         }
 
+    }
+    private void Spawn()
+    {
+        Instantiate(enemyprefabs);
     }
 }

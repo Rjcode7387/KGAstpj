@@ -22,7 +22,8 @@ public class Enemy : MonoBehaviour
 
     private void Start()
     {
-        target = GameObject.Find("Player").transform;
+        GameManager.Instance.enemies.Add(this);
+        target = GameManager.Instance.player.transform;
         maxHp = hp;
         
     }
@@ -50,10 +51,30 @@ public class Enemy : MonoBehaviour
 
         if (hp <= 0)//Áê±Ý
         {
-            Player count = target.GetComponent<Player>();
-            count.killcount++;
-            Destroy(gameObject);
+            Die();
 
         }
     }
+    private void Die()
+    {
+        GameManager.Instance.enemies.Remove(this);
+        GameManager.Instance.player.killcount++;
+        Destroy(gameObject);
+    }
+    public float damageInterval;
+    public float preDamageTime;
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            Player player = collision.gameObject.GetComponent<Player>();
+            if (Time.time >= preDamageTime)
+            {
+                player.hp -= damage;
+                preDamageTime = Time.time + damageInterval;
+                
+            }
+        }
+    }
+
 }
