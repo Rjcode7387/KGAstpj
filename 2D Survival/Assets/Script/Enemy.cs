@@ -61,8 +61,8 @@ public class Enemy : MonoBehaviour
         GameManager.Instance.player.killcount++;
         Destroy(gameObject);
     }
-    public float damageInterval;
-    public float preDamageTime;
+    public float damageInterval = 2f;
+    public float preDamageTime = 0f       ;
     private void OnCollisionStay2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Player"))

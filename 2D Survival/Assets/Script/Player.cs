@@ -12,8 +12,6 @@ public class Player : MonoBehaviour
     public float hp=100f;//체력
     public float damage=10f;//공격력
     public float moveSpeed=5f;//이동속도
-    private float nextDamageTime = 0f;
-    private float CooldownDamage = 2f;
     public TextMeshProUGUI Killtext;    
     public float PhpAmount { get { return hp/playermaxhp; } }
     public Projectie projectilePrefab;//투사체 프리펩
@@ -24,7 +22,7 @@ public class Player : MonoBehaviour
 
     private void Awake()
     {
-        moveDir= transform.Find("MoveDir");
+        moveDir= transform.Find("MoveDir"); 
         fireDir= transform.Find("FireDir");
     }
 
