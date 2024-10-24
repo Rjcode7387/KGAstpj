@@ -8,13 +8,15 @@ public class Player : MonoBehaviour
 {
     public int level = 0;//레벨
     public int exp = 0;//경험치
+    public GameObject levelupui;
+    public Button levelupButton;
 
     //현업에서 개발되는 대부분의 게임은
     //exp값을 빼지않음
     //계속 exp를 누적하는 대신에
     //현재 exp를 레벨로 환산하면 몇 레벨에 해당하는지 계산
 
-    private int[] levelupSteps = {100,200,300,400};//최대 레벨 5까지
+    private int[] levelupSteps = {1000,3000,6000,10000};//최대 레벨 5까지
     private int currentMaxExp; //현재 레벨에서 레벨업 하기까지 필요한 경험치량.
 
     private float maxHp;
@@ -40,8 +42,7 @@ public class Player : MonoBehaviour
 
     public Animator tailfireAnimCtrl;
     public Animator BlinkfireAnimCtrl;
-
-
+   
     private void Awake()
     {
         moveDir = transform.Find("MoveDir");
@@ -55,13 +56,15 @@ public class Player : MonoBehaviour
     {
         maxHp = hp; // 최대체력 지정
         currentMaxExp = levelupSteps[0];//최대 경험치
+        levelupButton.onClick.AddListener(OnclickButton);
+        levelupui.SetActive(false);
 
         leveltext.text = (level+1).ToString();
         expText.text = exp.ToString();
         GameManager.Instance.player = this;
         //리턴이 있는 함수를 호출할 때 , 리턴을 사용하지 않는다면
         //_ : 언더바는 무시항목으로 아예 반환을 위한 메모리를 점유하지 않고 함수만 호출할수 있다.
-        _=StartCoroutine(FireCoroutine());
+        //_=StartCoroutine(FireCoroutine());
     }
 
     void Update()
@@ -99,13 +102,13 @@ public class Player : MonoBehaviour
             fireDir = targetEnemy.transform.position - transform.position;
 
         }
-        Move(moveDir);
+        
 
         isFiring = targetEnemy != null;
 
         killcountText.text =killcount.ToString();
         hpBarImage.fillAmount = HpAmount;
-
+        Move(moveDir);
         if (moveDir.magnitude > 0.1f)
         {
             this.moveDir.up =moveDir;
@@ -128,26 +131,26 @@ public class Player : MonoBehaviour
     /// <summary>
     /// 투사체를 발사.
     /// </summary>
-    public void Fire()
-    {
-        Projectile projectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
+    //public void Fire()
+    //{
+    //    Projectile projectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
 
-        projectile.transform.up = fireDir.up;
-        projectile.damage = damage;
+    //    projectile.transform.up = fireDir.up;
+    //    projectile.damage = damage;
 
-    }
+    //}
     public float fireInterval;
     public bool isFiring;//적이있으면 true 적이없으면 false 활성화 비활성화 느낌으로 만들어보기
 
     //자동으로 투사체를 발사하는 코루틴
-    private IEnumerator FireCoroutine()
-    {
-        while (true)
-        {
-            yield return new WaitForSeconds(fireInterval);
-            if(isFiring)Fire();
-        }
-    }
+    //private IEnumerator FireCoroutine()
+    //{
+    //    while (true)
+    //    {
+    //        yield return new WaitForSeconds(fireInterval);
+    //        if (isFiring)Fire();
+    //    }
+    //}
 
     public void TakeHeal(float heal)
     {
@@ -180,18 +183,25 @@ public class Player : MonoBehaviour
         this.exp += exp;//습득한 경험치 더해줌
         if (level < levelupSteps.Length && this.exp >= currentMaxExp)
         {
-           
-            level++;
-            this.exp =currentMaxExp;
-            if(level < levelupSteps.Length) currentMaxExp = levelupSteps[level];
-            
-            
+            LevelUp();
         }
-
-
-
         leveltext.text = (level+1).ToString();
         expText.text = this.exp.ToString();
+    }
+
+    private void LevelUp()
+    {
+        level++;
+        Time.timeScale = 0; // 게임 일시 정지
+        this.exp = currentMaxExp;
+
+        if (level < levelupSteps.Length)
+        {
+            currentMaxExp = levelupSteps[level];
+        }
+
+        levelupui.SetActive(true); // 레벨업 UI 표시
+       
     }
 
 
@@ -206,10 +216,13 @@ public class Player : MonoBehaviour
         {
             contact.Contact();
             
-        }
-       
+        }     
+    }
 
-
+    public void OnclickButton()
+    {
+        Time.timeScale = 1;
+        levelupui.SetActive(false);
     }
 
     
