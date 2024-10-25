@@ -85,6 +85,7 @@ MonoBehaviour:
   moveSpeed: 5
   duration: 3
   pierceCount: 0
+  impactParticle: {fileID: 213684356876246442, guid: 010787dea71e9f540aefd945cad6ce7a, type: 3}
 --- !u!1 &2128003209349395700
 GameObject:
   m_ObjectHideFlags: 0

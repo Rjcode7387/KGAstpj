@@ -9,27 +9,33 @@ public class EnemySpawner : MonoBehaviour
     [Tooltip("스폰될 때 플레이어로부터의 최대/최소 거리\n x :최소, y :최대")]
     public Vector2Int minMaxDist;
 
-    public GameObject enemyPrefabs; // 적 프리펩
-    public float spawnIntaval; //생성간격
+    
+    public float spawnInteval; //생성간격
 
     private void Start()
     {
+      
         StartCoroutine(SpawnCoroutine());
     }
-
     private IEnumerator SpawnCoroutine()
     {
         while (true)
         {
-            yield return new WaitForSeconds(spawnIntaval);
-            int enemyCount = Random.Range(minMaxCount.x, minMaxCount.y);
-            //몬스터 스폰
-            Spawn(enemyCount);
+            
+            yield return new WaitForSeconds(spawnInteval);
+            SpawnEnemy();
         }
     }
-
-    private void Spawn(int count)
+    private void SpawnEnemy()
     {
+        Enemy enemy = EnemyPool.Enpool.Pop();
+        enemy.transform.position = SpawnPosition();
+    }
+
+    private Vector2 SpawnPosition()
+    {
+       
+
         Vector2 playerPos = GameManager.Instance.player.transform.position;
         Vector2 spawnPos;
         //랜덤 좌표를하나 찍는다.
@@ -45,11 +51,10 @@ public class EnemySpawner : MonoBehaviour
         //움직인 좌표에 minDist 만큼 움직인 백터를 더한다.
         spawnPos = movedPos + notSpawnAreaVector;
 
-        spawnPos = (ramPos *(minMaxDist.y - minMaxDist.x)) + (ramPos.normalized * minMaxDist.x);
+        //spawnPos = (ramPos *(minMaxDist.y - minMaxDist.x)) + (ramPos.normalized * minMaxDist.x);
 
-        print($"spawnPos : {spawnPos}");
-
-        Instantiate(enemyPrefabs, playerPos+spawnPos, Quaternion.identity);
+        return playerPos + spawnPos;
+    
         
     }
 }

@@ -6,13 +6,48 @@ public class LaserShotGun : LaserGun
 {
     public Transform[] shotPoints;
 
+    protected override void Update()
+    {
+        Enemy targetEnemy = null;
+        float targetDistance = float.MaxValue;
+
+        foreach (Enemy enemy in GameManager.Instance.enemies)
+        {
+            float distance = Vector3.Distance(enemy.transform.position, transform.position);
+
+            if (distance < targetDistance)
+            {
+                targetDistance = distance;
+                targetEnemy = enemy;
+            }
+        }
+
+        if (targetEnemy != null)
+        {
+            target = targetEnemy.transform;
+            isFiring = true;
+        }
+        else
+        {
+            isFiring = false;
+        }
+
+        if (target != null)
+        {
+            transform.up = target.position - transform.position;
+        }
+    }
 
     protected override IEnumerator FireCoroutine()
     {
         while (true)
         {
             yield return new WaitForSeconds(shotInterval);
-            Fire();
+            for (int i = 0; i < projectileCount; i++)
+            {
+                Fire();
+            }
+            
         }
     }
 

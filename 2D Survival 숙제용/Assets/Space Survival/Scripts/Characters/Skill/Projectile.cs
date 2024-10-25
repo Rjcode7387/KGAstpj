@@ -1,3 +1,4 @@
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,6 +13,7 @@ public class Projectile : MonoBehaviour
     public int pierceCount = 0; // °üÅëÈ½¼ö
 
     private CircleCollider2D coll;
+    public ParticleSystem impactParticle;
 
     private void Awake()
     {
@@ -69,6 +71,13 @@ public class Projectile : MonoBehaviour
         if (other.TryGetComponent<Enemy>(out Enemy enemy))
         {
             enemy.TakeDamage(damage);
+            if (impactParticle != null)
+            {
+                ParticleSystem particle = Instantiate(impactParticle,transform.position,Quaternion.identity);
+                particle.Play();
+                Destroy(particle.gameObject, particle.main.duration);
+            }
+
             //Destroy(gameObject);
             ProjectilePool.pool.Push(this);
            

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Experimental.GlobalIllumination;
 using UnityEngine.UI;
 
 public class Player : MonoBehaviour
@@ -42,6 +43,8 @@ public class Player : MonoBehaviour
 
     public Animator tailfireAnimCtrl;
     public Animator BlinkfireAnimCtrl;
+
+    
    
     private void Awake()
     {
@@ -100,6 +103,7 @@ public class Player : MonoBehaviour
         if (targetEnemy != null)
         {
             fireDir = targetEnemy.transform.position - transform.position;
+
 
         }
         

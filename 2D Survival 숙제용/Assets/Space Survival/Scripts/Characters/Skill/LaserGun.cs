@@ -18,21 +18,19 @@ public class LaserGun : MonoBehaviour
     public float innerInterval;
     [Tooltip("관통 횟수입니다 \n무제한 관통을 원할 경우 0입력")]
     public int pierceCount; // 관통횟수
-   
+
 
    
-    
+
+
     protected virtual void Start()
     {
         StartCoroutine(FireCoroutine());
     }
     protected virtual void Update()
     {
-        if (target == null) return;
-        transform.up = target.position - transform.position;
-        Enemy targetEnemy = null;//대상으로 지정된 적
-        float targetDistance = float.MaxValue; //대상과의 거리
-
+        Enemy targetEnemy = null;
+        float targetDistance = float.MaxValue;
 
         foreach (Enemy enemy in GameManager.Instance.enemies)
         {
@@ -40,18 +38,25 @@ public class LaserGun : MonoBehaviour
 
             if (distance < targetDistance)
             {
-                //이전에 비교한 적보다 가까우면
                 targetDistance = distance;
                 targetEnemy = enemy;
             }
         }
-        Vector2 fireDir = Vector2.zero;
+
         if (targetEnemy != null)
         {
-            fireDir = targetEnemy.transform.position - transform.position;
-
+            target = targetEnemy.transform;
+            isFiring = true;
         }
-        isFiring = targetEnemy != null;
+        else
+        {
+            isFiring = false;
+        }
+
+        if (target != null)
+        {
+            transform.up = target.position - transform.position;
+        }
     }
 
     protected virtual IEnumerator FireCoroutine()

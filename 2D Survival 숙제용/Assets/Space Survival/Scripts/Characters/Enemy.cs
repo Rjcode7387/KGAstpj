@@ -77,7 +77,9 @@ public class Enemy : MonoBehaviour
         GameManager.Instance.enemies.Remove(this);
         GameManager.Instance.player.killcount++;
         GameManager.Instance.player.GaniExp(exp);
-        Destroy(gameObject);
+        EnemyPool.Enpool.Push(this);
+        this.hp = maxHp;
+        
     }
 
     public float damageInterval;//데미지 간격
