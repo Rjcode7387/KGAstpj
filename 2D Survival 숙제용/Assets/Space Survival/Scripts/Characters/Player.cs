@@ -8,9 +8,7 @@ using UnityEngine.UI;
 public class Player : MonoBehaviour
 {
     public int level = 0;//레벨
-    public int exp = 0;//경험치
-    public GameObject levelupui;
-    public Button levelupButton;
+    public int exp = 0;//경험치  
 
     //현업에서 개발되는 대부분의 게임은
     //exp값을 빼지않음
@@ -25,16 +23,17 @@ public class Player : MonoBehaviour
     public float damage = 5f; //공격력
     public float moveSpeed = 5f; //이동속도
 
-    public Projectile projectilePrefab; //투사체 프리팹
+    //public Projectile projectilePrefab; //투사체 프리팹
 
     public float HpAmount { get => hp/maxHp; } //현재 체력 비율
 
-    public int killcount = 0;
+    public int killCount = 0;
+    public int totalKillCount = 0;
 
-    public Text killcountText;
-    public Image hpBarImage;
-    public Text leveltext;
-    public Text expText;
+    //public Text killcountText;
+    //public Image hpBarImage;
+    //public Text leveltext;
+    //public Text expText;
 
     private Transform moveDir;
     private Transform fireDir;
@@ -44,8 +43,12 @@ public class Player : MonoBehaviour
     public Animator tailfireAnimCtrl;
     public Animator BlinkfireAnimCtrl;
 
-    
-   
+    //public float healthRegenRate = 1f; // 초당 회복량
+    //public float regenInterval = 5f; // 회복 간격
+
+    public List<Skill> skills;
+
+
     private void Awake()
     {
         moveDir = transform.Find("MoveDir");
@@ -59,15 +62,25 @@ public class Player : MonoBehaviour
     {
         maxHp = hp; // 최대체력 지정
         currentMaxExp = levelupSteps[0];//최대 경험치
-        levelupButton.onClick.AddListener(OnclickButton);
-        levelupui.SetActive(false);
+        //StartCoroutine(AutoRegenerateHealth());
 
-        leveltext.text = (level+1).ToString();
-        expText.text = exp.ToString();
+        UIManager.Instance.levelText.text = (level + 1).ToString();
+        UIManager.Instance.expText.text = exp.ToString();
         GameManager.Instance.player = this;
         //리턴이 있는 함수를 호출할 때 , 리턴을 사용하지 않는다면
         //_ : 언더바는 무시항목으로 아예 반환을 위한 메모리를 점유하지 않고 함수만 호출할수 있다.
         //_=StartCoroutine(FireCoroutine());
+        foreach (Skill skill in skills)
+        {
+            GameObject skillObj = Instantiate(skill.skillPrefabs[skill.skillLevel], transform, false); // 스킬 오브젝트 생성
+            skillObj.name = skill.skillName;                                        // 오브젝트 이름 변경
+            skillObj.transform.localPosition = Vector2.zero;                        // 스킬 위치를 플레이어의 위치로 가져옴
+            if (skill.isTargetting)
+            {
+                skillObj.transform.SetParent(fireDir);  // 항상 적을 향하는 오브젝트 자식으로 만듦
+            }
+            skill.currentSkillObject = skillObj;
+        }
     }
 
     void Update()
@@ -108,10 +121,11 @@ public class Player : MonoBehaviour
         }
         
 
-        isFiring = targetEnemy != null;
+        
 
-        killcountText.text =killcount.ToString();
-        hpBarImage.fillAmount = HpAmount;
+        UIManager.Instance.killCountText.text = killCount.ToString();
+        UIManager.Instance.totalKillCountText.text = totalKillCount.ToString();
+        UIManager.Instance.hpBarImage.fillAmount = HpAmount;
         Move(moveDir);
         if (moveDir.magnitude > 0.1f)
         {
@@ -143,8 +157,8 @@ public class Player : MonoBehaviour
     //    projectile.damage = damage;
 
     //}
-    public float fireInterval;
-    public bool isFiring;//적이있으면 true 적이없으면 false 활성화 비활성화 느낌으로 만들어보기
+    //public float fireInterval;
+    //public bool isFiring;//적이있으면 true 적이없으면 false 활성화 비활성화 느낌으로 만들어보기
 
     //자동으로 투사체를 발사하는 코루틴
     //private IEnumerator FireCoroutine()
@@ -182,53 +196,58 @@ public class Player : MonoBehaviour
         }
     }
     //경험치 습득마다 호출
-    public void GaniExp(int exp)
+    public void GainExp(int exp)
     {
         this.exp += exp;//습득한 경험치 더해줌
         if (level < levelupSteps.Length && this.exp >= currentMaxExp)
         {
-            LevelUp();
+            OnLevelUp();
         }
-        leveltext.text = (level+1).ToString();
-        expText.text = this.exp.ToString();
+        UIManager.Instance.levelText.text = (level + 1).ToString();
+        UIManager.Instance.expText.text = this.exp.ToString();
     }
 
-    private void LevelUp()
+    private void OnLevelUp()
     {
         level++;
-        Time.timeScale = 0; // 게임 일시 정지
-        this.exp = currentMaxExp;
+        exp -= currentMaxExp;
+
 
         if (level < levelupSteps.Length)
         {
             currentMaxExp = levelupSteps[level];
+            UIManager.Instance.levelupPanel.LevelUpPanelOpen(skills, OnSkillLevelUp);
         }
 
-        levelupui.SetActive(true); // 레벨업 UI 표시
+       
        
     }
 
-
-
-    private void OnTriggerEnter2D(Collider2D collision)
+    public void OnSkillLevelUp(Skill skill)
     {
-   
-        //2.만약 특정 클래스를 상속하지 않고, 공통점이 없는 여러 객체들이 경우에따라
-        //같은 행동을 해야 할경우. Interface를 사용할 수있음.
-
-        if (collision.TryGetComponent<Item>(out var contact))
+        if (skill.skillLevel >= skill.skillPrefabs.Length - 1)
         {
-            contact.Contact();
-            
-        }     
+            // 유효하지 않은 스킬이 넘어왔다.
+            Debug.LogWarning($"최대 레벨에 도달한 스킬 레벨 업을 시도함{skill.skillName}");
+            return;
+        }
+        skill.skillLevel++;                 // 스킬 레벨 상승
+        Destroy(skill.currentSkillObject);  // 기존에 있던 스킬 오브젝트를 제거
+        skill.currentSkillObject = Instantiate(skill.skillPrefabs[skill.skillLevel], transform, false);
+        skill.currentSkillObject.name = skill.skillPrefabs[skill.skillLevel].name;
+        skill.currentSkillObject.transform.localPosition = Vector2.zero;
+        if (skill.isTargetting)
+        {
+            skill.currentSkillObject.transform.SetParent(fireDir);
+        }
     }
-
-    public void OnclickButton()
-    {
-        Time.timeScale = 1;
-        levelupui.SetActive(false);
-    }
-
-    
+    //private IEnumerator AutoRegenerateHealth()
+    //{
+    //    while (true)
+    //    {
+    //        yield return new WaitForSeconds(regenInterval);
+    //        TakeHeal(healthRegenRate);
+    //    }
+    //}
 
 }

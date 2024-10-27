@@ -5,15 +5,7 @@ using UnityEngine;
 public class Bomb : Item
 {
     public ParticleSystem BombParticle;
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.gameObject.CompareTag("Player"))
-        {
-            var contactPoint = collision.transform.position;
-            var particle = Instantiate(BombParticle, contactPoint, Quaternion.identity);
-            Destroy(particle.gameObject, 2f);
-        }
-    }
+   
     public override void Contact()
     {
         print("ÆøÅº ¾ß¹Ì");      
@@ -22,5 +14,15 @@ public class Bomb : Item
 
 
     }
-    
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            var contactPoint = collision.transform.position;
+            var particle = Instantiate(BombParticle, contactPoint, Quaternion.identity);
+            Destroy(particle.gameObject, 2f);
+
+            Contact();
+        }
+    }
 }

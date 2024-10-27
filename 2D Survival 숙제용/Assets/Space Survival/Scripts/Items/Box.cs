@@ -20,6 +20,8 @@ public class Box : Item
             var contactPoint = collision.transform.position;
             var particle = Instantiate(BoxParticle, contactPoint, Quaternion.identity);
             Destroy(particle.gameObject, 2f);
+
+            Contact();
         }
     }
 

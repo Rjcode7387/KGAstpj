@@ -9,8 +9,8 @@ public class EnemySpawner : MonoBehaviour
     [Tooltip("스폰될 때 플레이어로부터의 최대/최소 거리\n x :최소, y :최대")]
     public Vector2Int minMaxDist;
 
-    
-    public float spawnInteval; //생성간격
+    public GameObject enemyPrefab;
+    public float spawnInterval; //생성간격
 
     private void Start()
     {
@@ -21,12 +21,13 @@ public class EnemySpawner : MonoBehaviour
     {
         while (true)
         {
-            
-            yield return new WaitForSeconds(spawnInteval);
-            SpawnEnemy();
+
+            yield return new WaitForSeconds(spawnInterval);
+            int enemyCount = Random.Range(minMaxCount.x, minMaxCount.y);
+            Spawn(enemyCount);    // 몬스터 스폰
         }
     }
-    private void SpawnEnemy()
+    private void Spawn(int count)
     {
         Enemy enemy = EnemyPool.Enpool.Pop();
         enemy.transform.position = SpawnPosition();

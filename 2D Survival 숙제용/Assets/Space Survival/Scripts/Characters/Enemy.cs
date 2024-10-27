@@ -32,14 +32,15 @@ public class Enemy : MonoBehaviour
     private IEnumerator Start()//스타트 메세지 함수는 코루틴이 될 수있다
     {
         GameManager.Instance.enemies.Add(this); //적 리스트에 자기 자신을 Add
+        maxHp = hp;
         yield return null;//한프레임 쉬기
         target = GameManager.Instance.player.transform;
-        maxHp = hp;
+       
     }
 
     private void Update()
     {
-        if (target == null) return;
+        //if (target == null) return;
 
         //Vector2 moveDir = target  != null ? target.position - transform.position : Vector2.one;
         //?, ?? null check를 하는 접근 연산자
@@ -75,11 +76,11 @@ public class Enemy : MonoBehaviour
     public void Die()
     {
         GameManager.Instance.enemies.Remove(this);
-        GameManager.Instance.player.killcount++;
-        GameManager.Instance.player.GaniExp(exp);
-        EnemyPool.Enpool.Push(this);
-        this.hp = maxHp;
-        
+        GameManager.Instance.player.killCount++;
+        GameManager.Instance.player.totalKillCount++;
+        GameManager.Instance.player.GainExp(exp);
+        Destroy(gameObject);
+
     }
 
     public float damageInterval;//데미지 간격

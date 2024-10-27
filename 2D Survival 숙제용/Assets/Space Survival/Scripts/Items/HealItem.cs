@@ -22,6 +22,8 @@ public class HealItem : Item
             var contactPoint = collision.transform.position;
             var particle = Instantiate(healparticle, contactPoint, Quaternion.identity);
             Destroy(particle.gameObject, 1f);
+
+            Contact();
         }
 
 
