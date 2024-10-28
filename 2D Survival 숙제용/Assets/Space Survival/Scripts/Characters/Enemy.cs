@@ -10,8 +10,9 @@ public class Enemy : MonoBehaviour
     public float hp = 10f; //체력
     public float damage = 10f; //공격력
     public float moveSpeed = 3f; //이동 속도
+    private float playerExp;
+    private float playerLevel;
 
-    
     public float hpAmount { get { return hp / maxHp; } } //자주 계산되는 항목은 프로퍼티로 만들기
     
 
@@ -52,10 +53,17 @@ public class Enemy : MonoBehaviour
 
     public void Move(Vector2 dir)//dir 값이 커져도 1로 고정을 하고 싶을경우=>normalized
     {
-      
 
-        Vector2 movePos = rb.position+(dir * moveSpeed*Time.fixedDeltaTime);
-        
+
+        if (target == null)
+        {
+            // target이 null인 경우 처리
+            //Debug.LogWarning("Enemy의 target이 null입니다.");
+            return;
+        }
+
+        Vector2 moveDir = (target.position - transform.position).normalized;
+        Vector2 movePos = rb.position + (moveDir * moveSpeed * Time.fixedDeltaTime);
         rb.MovePosition(movePos);
 
     }
@@ -76,7 +84,7 @@ public class Enemy : MonoBehaviour
     public void Die()
     {
         GameManager.Instance.enemies.Remove(this);
-        GameManager.Instance.player.killCount++;
+        DataManager.Instance.totalKillCount++;
         GameManager.Instance.player.totalKillCount++;
         GameManager.Instance.player.GainExp(exp);
         Destroy(gameObject);
