@@ -41,9 +41,9 @@ public class GameManager : MonoBehaviour
     {
         List<Enemy> removeTargets = new List<Enemy>(enemies);//enemies 리스트를 복사
 
-        foreach (Enemy enemy in removeTargets)
+        foreach (Enemy removeTarget in removeTargets)
         {
-            enemy.Die();
+            removeTarget.Die();
         }
     }
 
@@ -53,15 +53,24 @@ public class GameManager : MonoBehaviour
         enemies.Clear();
         //GameManager는 DontDestroyOnLoad 상태이기 때문에
         //enemies 리스트에 빈 변수만 갖게 됨.
-        DataManager.Instance.OnSave();             
+                    
         SceneManager.LoadScene("GameOverScene");
     }
 
     public void ReStart()
     {
         SceneManager.LoadScene("GameScene");
+       
+    }
+    public void OnRestart()
+    {
         UIManager.Instance.OnRestart();
-    } 
+    }
+
+    public void OnInit()
+    {
+        SceneManager.LoadScene("GameScene");
+    }
 
     public class DefalultSinglton
     {

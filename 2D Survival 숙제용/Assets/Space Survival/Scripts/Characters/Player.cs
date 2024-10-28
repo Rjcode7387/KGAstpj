@@ -77,7 +77,7 @@ public class Player : MonoBehaviour
         //직접만들때는 주의 하도록
         renderer.GetComponent<Rotater>().enabled = playerdata.rotateRenderer;
 
-
+        GameManager.Instance.player = this;
         maxHp = hp; // 최대체력 지정
         currentMaxExp = levelupSteps[0];//최대 경험치
         //StartCoroutine(AutoRegenerateHealth());
@@ -108,8 +108,8 @@ public class Player : MonoBehaviour
 
         Vector2 moveDir = new Vector2(x, y);
 
-       
 
+        this.moveDir.gameObject.SetActive(moveDir != Vector2.zero);
         anim.SetBool("IsMoving", moveDir.magnitude > 0.4f);
         //tailfireAnimCtrl.SetBool()
 
@@ -117,6 +117,12 @@ public class Player : MonoBehaviour
 
         Enemy targetEnemy = null;//대상으로 지정된 적
         float targetDistance = float.MaxValue; //대상과의 거리
+
+        if (GameManager.Instance.enemies.Count == 0)
+        {
+            //발사 절차를 생략
+            //return;
+        }
 
 
         foreach (Enemy enemy in GameManager.Instance.enemies)
@@ -134,12 +140,18 @@ public class Player : MonoBehaviour
         if (targetEnemy != null)
         {
             fireDir = targetEnemy.transform.position - transform.position;
-
-
+            //isFiring = true;
         }
-        
+        else
+        {
+            Vector2 mousePos = Input.mousePosition;
+            Vector2 mouseScreenPos = Camera.main.ScreenToWorldPoint(mousePos);
+            fireDir = mouseScreenPos - (Vector2)transform.position;
+            //isFiring = false;
+        }
 
-        
+
+
 
         UIManager.Instance.killCountText.text = killCount.ToString();
         UIManager.Instance.totalKillCountText.text = totalKillCount.ToString();
@@ -212,6 +224,7 @@ public class Player : MonoBehaviour
         {
             hp=0;
             //TODO:게임오버처리
+            DataManager.Instance.OnSave();
             GameManager.Instance.GameOver();
         }
     }
@@ -222,6 +235,10 @@ public class Player : MonoBehaviour
         if (level < levelupSteps.Length && this.exp >= currentMaxExp)
         {
             OnLevelUp();
+        }
+        else
+        {
+            this.exp = currentMaxExp;
         }
         UIManager.Instance.levelText.text = (level + 1).ToString();
         UIManager.Instance.expText.text = this.exp.ToString();
