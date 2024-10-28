@@ -67,7 +67,10 @@ public class LaserShotGun : LaserGun
             proj.transform.localScale *= projectileScale;
             proj.transform.up = shotPonit.position - transform.position;
             proj.pierceCount = pierceCount;
+
+            
             LeanPool.Despawn(proj, proj.duration);
         }
+        audioSource.PlayOneShot(fireaAudioClip);
     }
 }

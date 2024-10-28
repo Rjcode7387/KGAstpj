@@ -12,10 +12,13 @@ public class EnemySpawner : MonoBehaviour
     public GameObject enemyPrefab;
     public float spawnInterval; //생성간격
 
+    public EnemyDataSO[]enemyDatas;
+
     private void Start()
     {
       
         StartCoroutine(SpawnCoroutine());
+        //Json으로 직렬화 = Json.org로 검색해보기
     }
     private IEnumerator SpawnCoroutine()
     {

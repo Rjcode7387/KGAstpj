@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 //게임 전체 진행을 총괄하는  오브젝트
 public class GameManager : MonoBehaviour
@@ -45,6 +46,22 @@ public class GameManager : MonoBehaviour
             enemy.Die();
         }
     }
+
+    public void GameOver()
+    {
+        GameOverSceneCtrl.killCount = player.killCount;
+        enemies.Clear();
+        //GameManager는 DontDestroyOnLoad 상태이기 때문에
+        //enemies 리스트에 빈 변수만 갖게 됨.
+        DataManager.Instance.OnSave();             
+        SceneManager.LoadScene("GameOverScene");
+    }
+
+    public void ReStart()
+    {
+        SceneManager.LoadScene("GameScene");
+        UIManager.Instance.OnRestart();
+    } 
 
     public class DefalultSinglton
     {

@@ -21,7 +21,13 @@ public class LaserGun : MonoBehaviour
     public int pierceCount; // °üÅëÈ½¼ö
 
 
-   
+    protected AudioSource audioSource;
+    public AudioClip fireaAudioClip;
+
+    protected void Awake()
+    {
+        audioSource = gameObject.AddComponent<AudioSource>();
+    }
 
 
     protected virtual void Start()
@@ -89,6 +95,7 @@ public class LaserGun : MonoBehaviour
         proj.pierceCount = pierceCount;
 
         LeanPool.Despawn(proj, proj.duration);
+        audioSource.PlayOneShot(fireaAudioClip);
 
 
 

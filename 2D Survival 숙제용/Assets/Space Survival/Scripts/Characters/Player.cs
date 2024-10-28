@@ -5,8 +5,10 @@ using UnityEngine;
 using UnityEngine.Experimental.GlobalIllumination;
 using UnityEngine.UI;
 
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour    
 {
+    public PlayerDataSO playerdata;
+
     public int level = 0;//레벨
     public int exp = 0;//경험치  
 
@@ -40,8 +42,10 @@ public class Player : MonoBehaviour
 
     private Rigidbody2D rb;
 
-    public Animator tailfireAnimCtrl;
-    public Animator BlinkfireAnimCtrl;
+    public new SpriteRenderer renderer;
+
+    public Animator anim;
+    
 
     //public float healthRegenRate = 1f; // 초당 회복량
     //public float regenInterval = 5f; // 회복 간격
@@ -60,6 +64,20 @@ public class Player : MonoBehaviour
 
     void Start()
     {
+        hp = playerdata.hp;
+        damage = playerdata.damage;
+        moveSpeed = playerdata.movespeed;
+        name = playerdata.charactername;
+        renderer.sprite = playerdata.sprite;
+        //Instantiate(playerdata.startSkillPrefab, transform, false);
+
+        //GameObject 활성화 / 비활성화 : SetActive(bool)
+        //Component  활성화 / 비활성화 : enabled = bool;
+        //두 경우 모두 OnEnabled/OnDisabled 메세지 함수가 호출.
+        //직접만들때는 주의 하도록
+        renderer.GetComponent<Rotater>().enabled = playerdata.rotateRenderer;
+
+
         maxHp = hp; // 최대체력 지정
         currentMaxExp = levelupSteps[0];//최대 경험치
         //StartCoroutine(AutoRegenerateHealth());
@@ -92,7 +110,7 @@ public class Player : MonoBehaviour
 
        
 
-        tailfireAnimCtrl.SetBool("IsMoving", moveDir.magnitude > 0.4f);
+        anim.SetBool("IsMoving", moveDir.magnitude > 0.4f);
         //tailfireAnimCtrl.SetBool()
 
         
@@ -183,7 +201,7 @@ public class Player : MonoBehaviour
     public void TakeDamage(float damage)
     {
 
-        BlinkfireAnimCtrl.SetTrigger("GetAttack");
+        anim.SetTrigger("Hit");
         if (damage < 0)
         {
             
@@ -193,6 +211,8 @@ public class Player : MonoBehaviour
         if (hp <= 0)//게임오버처리
         {
             hp=0;
+            //TODO:게임오버처리
+            GameManager.Instance.GameOver();
         }
     }
     //경험치 습득마다 호출

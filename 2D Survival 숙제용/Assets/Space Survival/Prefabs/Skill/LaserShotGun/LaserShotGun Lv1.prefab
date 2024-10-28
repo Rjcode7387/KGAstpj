@@ -142,6 +142,7 @@ MonoBehaviour:
   projectileCount: 1
   innerInterval: 0
   pierceCount: 0
+  fireaAudioClip: {fileID: 8300000, guid: ccc95a5036e67324faa12e1b5183f73e, type: 3}
   shotPoints:
   - {fileID: 6066007029952968712}
   - {fileID: 1876567240510619370}
