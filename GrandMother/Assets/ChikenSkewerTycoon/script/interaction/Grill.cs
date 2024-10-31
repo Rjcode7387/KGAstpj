@@ -62,7 +62,7 @@ public class Grill : MonoBehaviour
 
         if (ChickenSkewers > 0)
         {
-            GameManager.Instance.player.holdingChickenSkewers += ChickenSkewers;          
+            GameManager.Instance.player.holdingChickenSkewers += ChickenSkewers;
             ChickenSkewers = 0;//´ß²¿Ä¡¸¸ ÃÊ±âÈ­
             return true;
         }

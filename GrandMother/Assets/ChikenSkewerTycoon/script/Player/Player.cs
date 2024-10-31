@@ -89,7 +89,22 @@ public class Player : MonoBehaviour
             {
                 counter.sellandreceivemoney(this);
             }
-            //else if{ }
+            else if (skillec != null && Input.GetKeyDown(interactionKey))
+            {
+                if (!skillec.CanUpgrade())
+                {
+                    return;
+                }
+                if (dollar > 100f)
+                {
+                    dollar = 100f;
+                    skillec.UpgradeMove(this);
+                }
+                else 
+                {
+                    print("더 벌어와;;");
+                }
+            }
         }
     
     }  
