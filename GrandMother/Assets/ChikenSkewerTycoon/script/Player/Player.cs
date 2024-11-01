@@ -13,10 +13,12 @@ public class Player : MonoBehaviour
     public KeyCode interactionKey = KeyCode.F;//상호작용 키
     public float grillActivationCost = 100f; // 그릴을 살때 드는 돈
     private Vector2 lastMoveDirection = Vector2.right;
-    public int holdingChickenSkewers = 0;//닭꼬치를 플레이어가 들고있는 수
+    public int holdingChickenSkewers = 4;//닭꼬치를 플레이어가 들고있는 수
 
+    private SpriteRenderer sr;
     private void Start()
     {
+        sr = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
         targetPosition = transform.position; // 초기 위치 설정
     }
@@ -41,18 +43,22 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.W)) // 위로
         {
             targetPosition += Vector3.up * moveDistance;
+            
         }
         else if (Input.GetKeyDown(KeyCode.S)) // 아래로
         {
             targetPosition += Vector3.down * moveDistance;
+           
         }
         else if (Input.GetKeyDown(KeyCode.A)) // 왼쪽으로
         {
+            sr.flipX = false;
             targetPosition += Vector3.left * moveDistance;
             lastMoveDirection = Vector2.left;
         }
         else if (Input.GetKeyDown(KeyCode.D)) // 오른쪽으로
         {
+            sr.flipX = true;
             targetPosition += Vector3.right * moveDistance;
             lastMoveDirection = Vector2.right;
         }
@@ -67,7 +73,7 @@ public class Player : MonoBehaviour
         {
             Grill grill = hit.collider.GetComponent<Grill>();
             Counter counter = hit.collider.GetComponent<Counter>();
-            SkillEnhancementCenter skillec = hit.collider.GetComponent<SkillEnhancementCenter>();
+            //SkillEnhancementCenter skillec = hit.collider.GetComponent<SkillEnhancementCenter>();
             if (grill != null && Input.GetKeyDown(interactionKey))
             {
                 if (!grill.isPurchased && dollar >= grillActivationCost)
@@ -89,22 +95,10 @@ public class Player : MonoBehaviour
             {
                 counter.sellandreceivemoney(this);
             }
-            else if (skillec != null && Input.GetKeyDown(interactionKey))
-            {
-                if (!skillec.CanUpgrade())
-                {
-                    return;
-                }
-                if (dollar > 100f)
-                {
-                    dollar = 100f;
-                    skillec.UpgradeMove(this);
-                }
-                else 
-                {
-                    print("더 벌어와;;");
-                }
-            }
+            //else if (skillec != null && Input.GetKeyDown(interactionKey))
+            //{
+            //    //스킬 UI열기
+            //}
         }
     
     }  
