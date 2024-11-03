@@ -8,7 +8,7 @@ public class Counter : MonoBehaviour
 
     //닭꼬치를 자동판매 하여 판매 금액을 플레이어 소지금에 +시킨다. 
 
-    public float chickenSkewerPrice = 50f;//기본닭꼬치 판매금액
+    public float chickenSkewerPrice = 4f;//기본닭꼬치 판매금액
     private float upgradePrice = 1f;
 
     public void UpgradeSellPrice()
@@ -28,5 +28,9 @@ public class Counter : MonoBehaviour
 
             player.holdingChickenSkewers = 0;
         }
+    }
+    public void IncreaseSellingPrice(int amount)
+    {
+        chickenSkewerPrice += amount;
     }
 }

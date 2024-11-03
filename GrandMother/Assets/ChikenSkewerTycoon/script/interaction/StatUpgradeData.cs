@@ -5,21 +5,28 @@ using UnityEngine;
 public class StatUpgradeData
 {
     public int Level { get; private set; } = 1;
-    public int[] UpgradeCosts = new int[] { 200, 500 }; // 각 레벨 업그레이드 비용
+    public int[] UpgradeCosts;
+
+    public StatUpgradeData(int initialLevel, params int[] costs)
+    {
+        Level = initialLevel;
+        UpgradeCosts = costs;
+    }
 
     public int GetNextUpgradeCost()
     {
-        return Level >= 3 ? 0 : UpgradeCosts[Level - 1];
+        return Level > UpgradeCosts.Length ? int.MaxValue : UpgradeCosts[Level - 1];
     }
+
 
     public bool CanUpgrade(float playerMoney)
     {
-        return Level < 3 && playerMoney >= GetNextUpgradeCost();
+        return Level <= UpgradeCosts.Length && playerMoney >= GetNextUpgradeCost();
     }
 
     public bool Upgrade()
     {
-        if (Level >= 3) return false;
+        if (Level > UpgradeCosts.Length) return false;
         Level++;
         return true;
     }
