@@ -66,6 +66,7 @@ public class Player : MonoBehaviour
             targetPosition += Vector3.right * moveDistance;
             lastMoveDirection = Vector2.right;
         }
+
     }
     
     void GrillInterationg()
@@ -90,9 +91,10 @@ public class Player : MonoBehaviour
                 else if (grill.isPurchased && grill.ChickenSkewers > 0)
                 {
                     grill.TakeChickenSkewers();
-
-
-
+                }
+                else if(holdingChickenSkewers <= maxHoldingChickenSkewers)
+                {
+                    
                 }
             }
             else if (counter != null &&  Input.GetKeyDown(interactionKey))

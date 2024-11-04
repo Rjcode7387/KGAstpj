@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,10 +9,14 @@ public class SkillPanel : MonoBehaviour
     public Button[] upgradeButtons;
     public Text[] costTexts;
 
+    public Image[] skill1Stars;
+    public Image[] skill2Stars;
+    public Image[] skill3Stars;
+
 
     private StatUpgradeData moveSpeedData = new StatUpgradeData(1, 200, 500);
-    private StatUpgradeData holdingCapacityData = new StatUpgradeData(2, 200, 500);
-    private StatUpgradeData sellingPriceData = new StatUpgradeData(2, 200, 500);
+    private StatUpgradeData holdingCapacityData = new StatUpgradeData(1, 200, 500);
+    private StatUpgradeData sellingPriceData = new StatUpgradeData(1, 200, 500);
 
     private Player player;
     private Counter counter;
@@ -29,6 +34,10 @@ public class SkillPanel : MonoBehaviour
         upgradeButtons = GetComponentsInChildren<Button>();
         costTexts = GetComponentsInChildren<Text>();
 
+        InitializeStars(skill1Stars);
+        InitializeStars(skill2Stars);
+        InitializeStars(skill3Stars);
+
 
         for (int i = 0; i < upgradeButtons.Length; i++)
         {
@@ -36,6 +45,19 @@ public class SkillPanel : MonoBehaviour
             upgradeButtons[i].onClick.AddListener(() => UpgradeSkill(index));
         }
     }
+    private void InitializeStars(Image[] stars)
+    {
+        if (stars != null && stars.Length > 0)
+        {
+            stars[0].color = Color.white;
+            for (int i = 1; i < stars.Length; i++)
+            {
+                stars[i].color = new Color(1, 1, 1, 0.2f);
+            }
+        }
+    }
+
+
 
     private void UpgradeSkill(int index)
     {
@@ -84,14 +106,34 @@ public class SkillPanel : MonoBehaviour
         int nextCost = data.GetNextUpgradeCost();
         if (nextCost == int.MaxValue)
         {
-            costTexts[index].text = "Cost: MAX";
+            costTexts[index].text = "MAX!";
         }
         else
         {
-            costTexts[index].text = $"Cost: {nextCost}";
+            costTexts[index].text = $"{nextCost}";
         }
-        // UpdateStars(index, data.Level); // 필요 시 별 이미지 업데이트
+        UpdateStars(index, data.Level); // 필요 시 별 이미지 업데이트
     }
+    private void UpdateStars(int index, int level)
+    {
+        Image[] stars = index switch
+        {
+            0 => skill1Stars,
+            1 => skill2Stars,
+            2 => skill3Stars,
+            _ => null
+        };
+
+        if (stars != null)
+        {
+            for (int i = 0; i < stars.Length; i++)
+            {
+                stars[i].color = i < level ? Color.white : new Color(1, 1, 1, 0.2f);
+            }
+        }
+    }
+
+
 }
 
     

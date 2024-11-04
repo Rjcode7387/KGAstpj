@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Grill : MonoBehaviour
 {
@@ -20,14 +21,38 @@ public class Grill : MonoBehaviour
     public bool isPurchased = false;//생산중지 시작 
     private float currentMakingTime; // 현재 제작 진행시간
 
+    private SpriteRenderer spriteRenderer;
+    private Color originalcolor;
+    public Text maxText;
+
     private void Start()
     {
         ChickenSkewers = 0;//닭꼬치 수량 초기화      
         isPurchased = false;
         currentMakingTime = 0f;
-        
+
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
+        originalcolor = spriteRenderer.color;
+
+
+        Transparency(0.5f);
+
+        if (maxText != null)
+        {
+            maxText.gameObject.SetActive(false);
+        }
     }
 
+    private void Transparency(float alpha)
+    {
+        if (spriteRenderer != null)
+        {
+            Color newcolor = originalcolor;
+            newcolor.a = alpha;
+            spriteRenderer.color = newcolor;
+        }
+    }
     private void Update()
     {
         //활성화 상태일때 계속 생산 
@@ -43,30 +68,51 @@ public class Grill : MonoBehaviour
                     Debug.Log("나 생산중이야");
                 }
             }
-
+            MaxStatus();
         }
         
     }
 
+    private void MaxStatus()
+    {
+        if (maxText != null)
+        {
+            if (ChickenSkewers >= maxObjcet)
+            {
+                maxText.gameObject.SetActive(true);
+                maxText.text = "MAX";
+            }
+            else
+            {
+                maxText.gameObject.SetActive(false);
+            }
+        }
+    }
     
 
     //화로를 활성화하는 메소드 
     public void PurchaseGrill()
     {
         isPurchased = true;
+        Transparency(1f);
         Debug.Log("그릴이 구매되어 영구 활성화되었습니다!");
     }
     //닭꼬치를 플레이어가 가져가는 메서드
     public bool TakeChickenSkewers()
     {
+        Player player = GameManager.Instance.player;
 
-        if (ChickenSkewers > 0)
+        if (ChickenSkewers > 0 && player.holdingChickenSkewers < player.maxHoldingChickenSkewers)
         {
-            GameManager.Instance.player.holdingChickenSkewers += ChickenSkewers;
-            ChickenSkewers = 0;//닭꼬치만 초기화
+            int available = player.maxHoldingChickenSkewers -player.holdingChickenSkewers;
+            int takeTo = Mathf.Min(ChickenSkewers, available);
+
+            player.holdingChickenSkewers += takeTo;
+            ChickenSkewers -= available;
             return true;
         }
         return false;
+        
     }
 
 
