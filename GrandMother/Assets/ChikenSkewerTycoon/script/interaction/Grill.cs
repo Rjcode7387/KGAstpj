@@ -5,16 +5,20 @@ using UnityEngine.UI;
 
 public class Grill : MonoBehaviour
 {
- 
-   
+
+
     //그릴 활성화시 최대 저장한도까지 속도와 시간을 대입해서 만들고 Max도돨시 작동중지
     //활성화가 된 그릴에서 상호 작용시 그릴에 닭꼬치를 저장시 플레이어가 상호 작용시 플레이어가 닭꼬치를  가져감
     //계산대에서 상호작용키를 누르면 들고 있던 닭꼬치를 계산대에 저장함
     //최대 저장한 닭꼬치를 가져가면 다시 작동
     //
+    [Header("닭꼬치 생성 관련")]
+    public GameObject chickenSkewerPrefab;  // 닭꼬치 프리팹
+    private Vector2 spawnOffset = new Vector2(0, 0.3f);      // 생성 위치 오프셋
+    private List<GameObject> activeChickenSkewers = new List<GameObject>();
 
     public int ChickenSkewers = 0;//닭꼬치
-    public float makingTime = 5f;
+    public float makingTime = 2f;
     public float makingSpeed = 1f;//생산속도
     public int maxObjcet = 4;//저장 한도
     
@@ -24,6 +28,7 @@ public class Grill : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private Color originalcolor;
     public Text maxText;
+    public Text tutorialText;
 
     private void Start()
     {
@@ -41,6 +46,10 @@ public class Grill : MonoBehaviour
         if (maxText != null)
         {
             maxText.gameObject.SetActive(false);
+        }
+        if(tutorialText != null)
+        {
+            tutorialText.gameObject.SetActive(true);
         }
     }
 
@@ -64,6 +73,7 @@ public class Grill : MonoBehaviour
                 currentMakingTime = 0f;
                 if (ChickenSkewers < maxObjcet)
                 {
+                    SpawnChickenSkewer();
                     ChickenSkewers++;
                     Debug.Log("나 생산중이야");
                 }
@@ -72,6 +82,13 @@ public class Grill : MonoBehaviour
         }
         
     }
+    private void SpawnChickenSkewer()
+    {
+        Vector2 spawnPos = (Vector2)transform.position+spawnOffset;
+        GameObject newSkewer = Instantiate(chickenSkewerPrefab, spawnPos, Quaternion.identity);
+        activeChickenSkewers.Add(newSkewer);
+    }
+
 
     private void MaxStatus()
     {
@@ -95,6 +112,10 @@ public class Grill : MonoBehaviour
     {
         isPurchased = true;
         Transparency(1f);
+        if(tutorialText != null)
+        {
+            tutorialText.gameObject.SetActive(false);
+        }
         Debug.Log("그릴이 구매되어 영구 활성화되었습니다!");
     }
     //닭꼬치를 플레이어가 가져가는 메서드
@@ -102,17 +123,29 @@ public class Grill : MonoBehaviour
     {
         Player player = GameManager.Instance.player;
 
-        if (ChickenSkewers > 0 && player.holdingChickenSkewers < player.maxHoldingChickenSkewers)
-        {
-            int available = player.maxHoldingChickenSkewers -player.holdingChickenSkewers;
-            int takeTo = Mathf.Min(ChickenSkewers, available);
+        // 가져갈 수 있는 닭꼬치 개수 계산
+        int availableSpace = player.maxHoldingChickenSkewers - player.holdingChickenSkewers.Count;
+        int chickensToTake = Mathf.Min(ChickenSkewers, availableSpace);
 
-            player.holdingChickenSkewers += takeTo;
-            ChickenSkewers -= available;
+        if (chickensToTake > 0)
+        {
+            // 계산된 개수만큼 한번에 닭꼬치 가져가기
+            for (int i = 0; i < chickensToTake; i++)
+            {
+               
+                // 마지막으로 생성된 닭꼬치를 플레이어에게 전달
+                GameObject skewer = activeChickenSkewers[activeChickenSkewers.Count - 1];
+                activeChickenSkewers.RemoveAt(activeChickenSkewers.Count - 1);
+
+                skewer.GetComponent<ChickenSkewer>().SetFollowTarget(player.transform);
+                player.holdingChickenSkewers.Add(skewer);
+
+                ChickenSkewers--;
+            }
             return true;
         }
         return false;
-        
+
     }
 
 

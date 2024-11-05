@@ -8,8 +8,8 @@ using UnityEngine.UI;
 public class SystemPanel : MonoBehaviour
 {
     //닫는 버튼, 게임 끝 버튼
-    private Button closeButton;
-    private Button gameoverButton;
+    public Button closeButton;
+    public Button gameoverButton;
 
     private void Awake()
     {
@@ -40,8 +40,12 @@ public class SystemPanel : MonoBehaviour
         
         private void OnGameQuitButtonClick()
         {
-            Application.Quit();
-        }
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif  
+    }
 
         private void OnDestroy()
         {

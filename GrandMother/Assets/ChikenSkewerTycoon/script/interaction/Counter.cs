@@ -18,15 +18,27 @@ public class Counter : MonoBehaviour
     }
     public void sellandreceivemoney(Player player)
     {
-        if (player.holdingChickenSkewers > 0)
+        if (player.holdingChickenSkewers.Count > 0)
         {
-            float totalSaleAmount = player.holdingChickenSkewers * chickenSkewerPrice*upgradePrice;
+            int totalSkewers = player.holdingChickenSkewers.Count;
+            float totalSaleAmount = totalSkewers * chickenSkewerPrice * upgradePrice;
+
+            // 플레이어에게 돈 지급
             player.dollar += totalSaleAmount;
 
-            print($"닭꼬치{player.holdingChickenSkewers}");
-            print($"현재 소지금 : {player.dollar}");
+            // 모든 닭꼬치 오브젝트 한번에 삭제
+            foreach (GameObject skewer in player.holdingChickenSkewers)
+            {
+                Destroy(skewer);
+            }
+            player.holdingChickenSkewers.Clear();
 
-            player.holdingChickenSkewers = 0;
+
+
+            print($"판매한 닭꼬치: {player.holdingChickenSkewers.Count}개");
+            print($"현재 소지금: {player.dollar}원");
+
+          
         }
     }
     public void IncreaseSellingPrice(int amount)
