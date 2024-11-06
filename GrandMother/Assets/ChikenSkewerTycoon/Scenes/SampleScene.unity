@@ -7436,52 +7436,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &536202206
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 536202208}
-  - component: {fileID: 536202207}
-  m_Layer: 0
-  m_Name: GameControler
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &536202207
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 536202206}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 797d6464644a93349b6bbcf04d63ac9e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moneyText: {fileID: 834964262}
-  player: {fileID: 1510111897}
---- !u!4 &536202208
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 536202206}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.457271, y: 0.59459466, z: -15.009611}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &567695218
 GameObject:
   m_ObjectHideFlags: 0
@@ -8947,11 +8901,11 @@ RectTransform:
   m_LocalScale: {x: 0.8, y: 4.8, z: 1.6}
   m_ConstrainProportionsScale: 1
   m_Children: []
-  m_Father: {fileID: 1323716960}
+  m_Father: {fileID: 1926253592}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -225, y: 0.000026703}
+  m_AnchoredPosition: {x: 555.23047, y: 487.94974}
   m_SizeDelta: {x: 112.6315, y: 19.999}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &874709397
@@ -10094,7 +10048,7 @@ TilemapCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -14462,7 +14416,6 @@ RectTransform:
   m_Children:
   - {fileID: 1122170526}
   - {fileID: 834964261}
-  - {fileID: 874709396}
   m_Father: {fileID: 1926253592}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
@@ -16879,6 +16832,7 @@ RectTransform:
   m_Children:
   - {fileID: 670726007}
   - {fileID: 1323716960}
+  - {fileID: 874709396}
   - {fileID: 350075607}
   - {fileID: 836971479}
   m_Father: {fileID: 0}
@@ -16900,6 +16854,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eadadc165597c8647a187f3cc839e1f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moneyText: {fileID: 834964262}
+  player: {fileID: 1510111897}
 --- !u!1 &1988836258
 GameObject:
   m_ObjectHideFlags: 0
@@ -17107,6 +17063,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 1510111897}
+  uiManager: {fileID: 0}
+  counter: {fileID: 0}
 --- !u!4 &1998624563
 Transform:
   m_ObjectHideFlags: 0
@@ -17815,5 +17773,4 @@ SceneRoots:
   - {fileID: 1998624563}
   - {fileID: 90127601}
   - {fileID: 1926253592}
-  - {fileID: 536202208}
   - {fileID: 882631083}

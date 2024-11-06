@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
@@ -9,7 +10,14 @@ public class UIManager : MonoBehaviour
 
     private PauseButton pausedButton;
     private SystemPanel systemPanel;
+    public Text moneyText;
+    public Player player;
 
+
+    void Update()
+    {
+        moneyText.text =$"￦{player.dollar}";
+    }
     private void Awake()
     {
         Setup();
@@ -19,6 +27,14 @@ public class UIManager : MonoBehaviour
     private void Start()
     {
         InitializeUI();
+    }
+
+    public void UpdateMoneyText(float amount)
+    {
+        if (moneyText != null)
+        {
+            moneyText.text = $"￦{amount}";
+        }
     }
 
     //싱글톤 패턴 구현 및 씬 전환시에도 유지가 되는 메서드
@@ -57,12 +73,13 @@ public class UIManager : MonoBehaviour
     public void TogglePauseState()
     {
         if (systemPanel.gameObject.activeSelf)
-        {
-            
+        {    
+            systemPanel.gameObject.SetActive(false);   
             ResumeGame();
         }
         else
-        {
+        { 
+            systemPanel.gameObject.SetActive(true);
             PauseGame();
         }
     }
@@ -72,7 +89,7 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void PauseGame()
     {
-        systemPanel.gameObject.SetActive(true);
+        
         Time.timeScale = 0f; // 게임 시간 정지
     }
 
@@ -81,7 +98,7 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void ResumeGame()
     {
-        systemPanel.gameObject.SetActive(false);
+       
         Time.timeScale = 1f; // 게임 시간 정상화
     }
 
