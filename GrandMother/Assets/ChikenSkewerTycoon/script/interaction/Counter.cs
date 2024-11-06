@@ -8,33 +8,42 @@ public class Counter : MonoBehaviour
 
     //닭꼬치를 자동판매 하여 판매 금액을 플레이어 소지금에 +시킨다. 
 
-    public float chickenSkewerPrice = 4f;//기본닭꼬치 판매금액
-    private float upgradePrice = 0.5f;
+    public float basePrice = 4f;//기본닭꼬치 판매금액
+    private float priceMultiplier = 1f;
 
-    public void UpgradeSellPrice()
+    public void SellChickenSkewers(Player player)
     {
-        upgradePrice += 0.5f;
+        if (player == null || player.holdingChickenSkewers.Count <= 0) return;
 
+        float totalAmount = CalculateSaleAmount(player.holdingChickenSkewers.Count);
+        GameManager.Instance.AddMoney(totalAmount);
+        ClearPlayerSkewers(player);
     }
-    public void sellandreceivemoney(Player player)
+
+    public void UpgradePriceMultiplier()
     {
-        if (player.holdingChickenSkewers.Count > 0)
+        priceMultiplier += 0.5f;
+    }
+
+    public void IncreaseBasePrice(float amount)
+    {
+        basePrice += amount;
+    }
+
+    private float CalculateSaleAmount(int skewerCount)
+    {
+        return skewerCount * basePrice * priceMultiplier;
+    }
+
+    private void ClearPlayerSkewers(Player player)
+    {
+        foreach (GameObject skewer in player.holdingChickenSkewers)
         {
-            int totalSkewers = player.holdingChickenSkewers.Count;
-            float totalSaleAmount = totalSkewers * chickenSkewerPrice * upgradePrice;
-
-            GameManager.Instance.AddMoney(totalSaleAmount);
-            player.dollar += totalSaleAmount;
-
-            foreach (GameObject skewer in player.holdingChickenSkewers)
+            if (skewer != null)
             {
                 Destroy(skewer);
             }
-            player.holdingChickenSkewers.Clear();
         }
-    }
-    public void IncreaseSellingPrice(int amount)
-    {
-        chickenSkewerPrice += amount;
+        player.holdingChickenSkewers.Clear();
     }
 }

@@ -24,7 +24,7 @@ public class SkillPanel : MonoBehaviour
     private void Start()
     {
         player = GameManager.Instance.player;
-        counter = FindAnyObjectByType<Counter>();
+        counter = GameManager.Instance.counter; 
         InitializeUI();
         gameObject.SetActive(false);
     }
@@ -96,7 +96,7 @@ public class SkillPanel : MonoBehaviour
                 player.maxHoldingChickenSkewers += 2;
                 break;
             case 2:
-                counter.IncreaseSellingPrice(2);
+                counter.UpgradePriceMultiplier();
                 break;
         }
     }

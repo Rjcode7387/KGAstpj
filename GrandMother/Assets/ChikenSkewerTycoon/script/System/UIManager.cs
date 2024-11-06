@@ -11,13 +11,8 @@ public class UIManager : MonoBehaviour
     private PauseButton pausedButton;
     private SystemPanel systemPanel;
     public Text moneyText;
-    public Player player;
+   
 
-
-    void Update()
-    {
-        moneyText.text =$"￦{player.dollar}";
-    }
     private void Awake()
     {
         Setup();
@@ -74,12 +69,12 @@ public class UIManager : MonoBehaviour
     {
         if (systemPanel.gameObject.activeSelf)
         {    
-            systemPanel.gameObject.SetActive(false);   
+            
             ResumeGame();
         }
         else
         { 
-            systemPanel.gameObject.SetActive(true);
+            
             PauseGame();
         }
     }
@@ -89,7 +84,8 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void PauseGame()
     {
-        
+        systemPanel.gameObject.SetActive(true);
+       
         Time.timeScale = 0f; // 게임 시간 정지
     }
 
@@ -98,7 +94,7 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void ResumeGame()
     {
-       
+        systemPanel.gameObject.SetActive(false);
         Time.timeScale = 1f; // 게임 시간 정상화
     }
 

@@ -8,8 +8,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance => instance;
 
     internal Grill grill;
-    public Player player;
-    public UIManager uiManager;
+    public Player player;  
     public Counter counter;
     public float totalMoney => player.dollar;
     public int totalChickenSkewers => player.holdingChickenSkewers.Count;
@@ -35,32 +34,33 @@ public class GameManager : MonoBehaviour
     {
         grill = FindAnyObjectByType<Grill>();
         player = FindAnyObjectByType<Player>();
-        uiManager = FindAnyObjectByType<UIManager>();
         counter = FindAnyObjectByType<Counter>();
-
-        if (grill == null || player == null || uiManager == null || counter == null)
-        {
-            Debug.LogError("Essential components are missing!");
-        }
     }
+
+
     public void AddMoney(float amount)
     {
+        if (amount <= 0 || player == null) return;
+
         player.dollar += amount;
-        uiManager.UpdateMoneyText(player.dollar);
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.UpdateMoneyText(player.dollar);
+        }
     }
 
     public bool SpendMoney(float amount)
     {
-        if (player.dollar >= amount)
+        if (amount <= 0 || player == null || player.dollar < amount) return false;
+
+        player.dollar -= amount;
+        if (UIManager.Instance != null)
         {
-            player.dollar -= amount;
-            uiManager.UpdateMoneyText(player.dollar);
-            return true;
+            UIManager.Instance.UpdateMoneyText(player.dollar);
         }
-        return false;
+        return true;
     }
 
-    // ´ß²¿Ä¡ °ü·Ã ¸Þ¼­µå
     public bool CanHoldMoreChickenSkewers()
     {
         return player.holdingChickenSkewers.Count < player.maxHoldingChickenSkewers;
@@ -68,9 +68,7 @@ public class GameManager : MonoBehaviour
 
     public void SellChickenSkewers()
     {
-        if (player != null && counter != null)
-        {
-            counter.sellandreceivemoney(player);
-        }
+        if (player == null || counter == null) return;
+        counter.SellChickenSkewers(player);
     }
 }

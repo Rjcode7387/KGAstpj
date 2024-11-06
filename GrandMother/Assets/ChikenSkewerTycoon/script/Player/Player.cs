@@ -21,22 +21,20 @@ public class Player : MonoBehaviour
     public List<GameObject> holdingChickenSkewers = new List<GameObject>();//닭꼬치를 플레이어가 들고있는 수
     public int maxHoldingChickenSkewers = 4;  
     private SkillPanel skillPanel;
-    private SkillPanelColler skillPanelColler;
+    private SkillPanelCaller skillPanelCaller;
     private void Start()
     {
         sr = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
         targetPosition = transform.position; // 초기 위치 설정
-        skillPanel = FindObjectOfType<SkillPanel>();
-        skillPanelColler = FindObjectOfType<SkillPanelColler>();
+        skillPanel = GameManager.Instance.GetComponent<SkillPanel>();
+        skillPanelCaller = GameManager.Instance.GetComponent<SkillPanelCaller>();
     }
 
     private void Update()
     {
         Move();
-        GrillInterating();
-        CounterInteracting();
-        SkillPanelInteracting();
+        CheckInteraction();
     }
 
     void Move()
@@ -84,51 +82,39 @@ public class Player : MonoBehaviour
 
     }
 
-    void GrillInterating()
+    void CheckInteraction()
     {
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, lastMoveDirection, interactionDistance, LayerMask.GetMask("Interaction"));
+        if (!Input.GetKeyDown(interactionKey)) return;
 
-        if (hit.collider != null)
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, lastMoveDirection, interactionDistance, LayerMask.GetMask("Interaction"));
+        if (hit.collider == null) return;
+
+        // 그릴 상호작용
+        if (hit.collider.TryGetComponent<Grill>(out var grill))
         {
-            Grill grill = hit.collider.GetComponent<Grill>();
-            if (grill != null && Input.GetKeyDown(interactionKey))
+            if (!grill.isPurchased && GameManager.Instance.SpendMoney(grillActivationCost))
             {
-                if (!grill.isPurchased && GameManager.Instance.SpendMoney(grillActivationCost))
-                {
-                    grill.PurchaseGrill();
-                }
-                else if (grill.isPurchased && grill.ChickenSkewers > 0 &&
-                         GameManager.Instance.CanHoldMoreChickenSkewers())
-                {
-                    grill.TakeChickenSkewers();
-                }
+                grill.PurchaseGrill();
             }
+            else if (grill.isPurchased && grill.ChickenSkewers > 0 &&
+                     GameManager.Instance.CanHoldMoreChickenSkewers())
+            {
+                grill.TakeChickenSkewers();
+            }
+            return;
         }
-    }
-    void CounterInteracting()
-    {
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, lastMoveDirection, interactionDistance, LayerMask.GetMask("Interaction"));
 
-        if (hit.collider != null)
+        // 카운터 상호작용
+        if (hit.collider.TryGetComponent<Counter>(out var counter))
         {
-            Counter counter = hit.collider.GetComponent<Counter>();
-            if (counter != null && Input.GetKeyDown(interactionKey))
-            {
-                counter.sellandreceivemoney(this);
-            }
+            counter.SellChickenSkewers(this);
+            return;
         }
-    }
-    void SkillPanelInteracting()
-    {
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, lastMoveDirection, interactionDistance, LayerMask.GetMask("Interaction"));
 
-        if (hit.collider != null)
+        // 스킬패널 상호작용
+        if (hit.collider.TryGetComponent<SkillPanelCaller>(out var coller))
         {
-            SkillPanelColler coller = hit.collider.GetComponent<SkillPanelColler>();
-            if (coller != null && Input.GetKeyDown(interactionKey))
-            {
-                coller.ToggleSkillPanel();
-            }
+            coller.ToggleSkillPanel();
         }
     }
 }

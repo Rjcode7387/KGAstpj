@@ -12,11 +12,8 @@ public class Grill : MonoBehaviour
     //계산대에서 상호작용키를 누르면 들고 있던 닭꼬치를 계산대에 저장함
     //최대 저장한 닭꼬치를 가져가면 다시 작동
     //
-    [Header("닭꼬치 생성 관련")]
-    public GameObject chickenSkewerPrefab;  // 닭꼬치 프리팹
-    private Vector2 spawnOffset = new Vector2(0, 0.3f);      // 생성 위치 오프셋
-    private List<GameObject> activeChickenSkewers = new List<GameObject>();
-
+    private ChickenSkewerSpawner spawner;
+    [SerializeField] private GameObject chickenSkewerPrefab;
     public int ChickenSkewers = 0;//닭꼬치
     public float makingTime = 2f;
     public float makingSpeed = 1f;//생산속도
@@ -32,27 +29,39 @@ public class Grill : MonoBehaviour
 
     private void Start()
     {
-        ChickenSkewers = 0;//닭꼬치 수량 초기화      
+        spawner = GetComponent<ChickenSkewerSpawner>();
+        if (spawner == null)
+        {
+            spawner = gameObject.AddComponent<ChickenSkewerSpawner>();
+        }
+        spawner.Initialize(chickenSkewerPrefab);
+        InitializeGrill();
+    }
+
+    private void InitializeGrill()
+    {
+        ChickenSkewers = 0;
         isPurchased = false;
         currentMakingTime = 0f;
 
         spriteRenderer = GetComponent<SpriteRenderer>();
-
         originalcolor = spriteRenderer.color;
-
-
         Transparency(0.5f);
 
+        SetupUI();
+    }
+
+    private void SetupUI()
+    {
         if (maxText != null)
         {
             maxText.gameObject.SetActive(false);
         }
-        if(tutorialText != null)
+        if (tutorialText != null)
         {
             tutorialText.gameObject.SetActive(true);
         }
     }
-
     private void Transparency(float alpha)
     {
         if (spriteRenderer != null)
@@ -67,27 +76,25 @@ public class Grill : MonoBehaviour
         //활성화 상태일때 계속 생산 
         if (isPurchased)
         {
-             currentMakingTime += Time.deltaTime * makingSpeed;
-            if (currentMakingTime >= makingTime)
-            {
-                currentMakingTime = 0f;
-                if (ChickenSkewers < maxObjcet)
-                {
-                    SpawnChickenSkewer();
-                    ChickenSkewers++;
-                    Debug.Log("나 생산중이야");
-                }
-            }
+            UpdateProduction();
             MaxStatus();
         }
-        
+
     }
-    private void SpawnChickenSkewer()
+    private void UpdateProduction()
     {
-        Vector2 spawnPos = (Vector2)transform.position+spawnOffset;
-        GameObject newSkewer = Instantiate(chickenSkewerPrefab, spawnPos, Quaternion.identity);
-        activeChickenSkewers.Add(newSkewer);
+        currentMakingTime += Time.deltaTime * makingSpeed;
+        if (currentMakingTime >= makingTime)
+        {
+            currentMakingTime = 0f;
+            if (ChickenSkewers < maxObjcet)
+            {
+                spawner.SpawnChickenSkewer(transform.position);
+                ChickenSkewers++;
+            }
+        }
     }
+   
 
 
     private void MaxStatus()
@@ -122,25 +129,20 @@ public class Grill : MonoBehaviour
     public bool TakeChickenSkewers()
     {
         Player player = GameManager.Instance.player;
-
-        // 가져갈 수 있는 닭꼬치 개수 계산
         int availableSpace = player.maxHoldingChickenSkewers - player.holdingChickenSkewers.Count;
         int chickensToTake = Mathf.Min(ChickenSkewers, availableSpace);
 
         if (chickensToTake > 0)
         {
-            // 계산된 개수만큼 한번에 닭꼬치 가져가기
             for (int i = 0; i < chickensToTake; i++)
             {
-               
-                // 마지막으로 생성된 닭꼬치를 플레이어에게 전달
-                GameObject skewer = activeChickenSkewers[activeChickenSkewers.Count - 1];
-                activeChickenSkewers.RemoveAt(activeChickenSkewers.Count - 1);
-
-                skewer.GetComponent<ChickenSkewer>().SetFollowTarget(player.transform);
-                player.holdingChickenSkewers.Add(skewer);
-
-                ChickenSkewers--;
+                GameObject skewer = spawner.TakeLastSkewer();
+                if (skewer != null)
+                {
+                    skewer.GetComponent<ChickenSkewer>().SetFollowTarget(player.transform);
+                    player.holdingChickenSkewers.Add(skewer);
+                    ChickenSkewers--;
+                }
             }
             return true;
         }

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SkillPanelColler : MonoBehaviour
+public class SkillPanelCaller : MonoBehaviour
 {
     public SkillPanel skillPanel;
     public void ToggleSkillPanel()
