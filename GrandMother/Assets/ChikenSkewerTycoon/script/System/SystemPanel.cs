@@ -31,19 +31,19 @@ public class SystemPanel : MonoBehaviour
         closeButton?.onClick.AddListener(OnCloseButtonClick);
         gameoverButton?.onClick.AddListener(OnGameQuitButtonClick);
     }
-        private void OnCloseButtonClick()
-        {
-            UIManager.Instance.ResumeGame();
-        print("Á¾·á?");
-        }
+    private void OnCloseButtonClick()
+    {
+        UIManager.Instance.ResumeGame();
+    
+    }
 
         
-        private void OnGameQuitButtonClick()
-        {
+    private void OnGameQuitButtonClick()
+    {
 #if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
+     UnityEditor.EditorApplication.isPlaying = false;
 #else
-        Application.Quit();
+   Application.Quit();
 #endif  
     }
 

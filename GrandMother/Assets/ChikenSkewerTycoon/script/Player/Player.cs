@@ -90,14 +90,14 @@ public class Player : MonoBehaviour
         if (hit.collider == null) return;
 
         // 그릴 상호작용
-        if (hit.collider.TryGetComponent<Grill>(out var grill))
+        if (hit.collider.TryGetComponent(out Grill grill))
         {
             if (!grill.isPurchased && GameManager.Instance.SpendMoney(grillActivationCost))
             {
                 grill.PurchaseGrill();
             }
-            else if (grill.isPurchased && grill.ChickenSkewers > 0 &&
-                     GameManager.Instance.CanHoldMoreChickenSkewers())
+            else if (grill.isPurchased && grill.ChickenSkewers > 0 
+                && GameManager.Instance.CanHoldMoreChickenSkewers())
             {
                 grill.TakeChickenSkewers();
             }
@@ -105,14 +105,14 @@ public class Player : MonoBehaviour
         }
 
         // 카운터 상호작용
-        if (hit.collider.TryGetComponent<Counter>(out var counter))
+        if (hit.collider.TryGetComponent(out Counter counter))
         {
             counter.SellChickenSkewers(this);
             return;
         }
 
         // 스킬패널 상호작용
-        if (hit.collider.TryGetComponent<SkillPanelCaller>(out var coller))
+        if (hit.collider.TryGetComponent(out SkillPanelCaller coller))
         {
             coller.ToggleSkillPanel();
         }

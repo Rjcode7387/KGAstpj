@@ -29,6 +29,7 @@ public class GameManager : MonoBehaviour
         {
             DestroyImmediate(this);
         }
+        
     }
     private void FindGameComponents()
     {
