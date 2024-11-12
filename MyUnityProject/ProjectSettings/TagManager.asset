@@ -13,13 +13,13 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Ignoire Physics
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
+  - UI Block
+  - CameraPassthrough
+  - FirstCanOnly
+  - Minimap Icon
   - 
   - 
   - 
