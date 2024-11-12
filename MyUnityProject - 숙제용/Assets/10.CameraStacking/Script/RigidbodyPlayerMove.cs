@@ -15,7 +15,7 @@ public class RigidbodyPlayerMove : MonoBehaviour
         rb = GetComponent<Rigidbody>();
     }
 
-    private Vector2 mousePosCache;
+    
     private void Update()
     {
         float inputx = Input.GetAxis("Horizontal");

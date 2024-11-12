@@ -20,9 +20,9 @@ TagManager:
   - CameraPassthrough
   - FirstCanOnly
   - Minimap Icon
-  - 
-  - 
-  - 
+  - Player
+  - Enemy
+  - Box
   - 
   - 
   - 
