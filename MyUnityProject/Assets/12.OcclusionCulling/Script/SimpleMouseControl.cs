@@ -17,7 +17,15 @@ public class SimpleMouseControl : MonoBehaviour
         Cursor.visible = false;
        
     }
-   
 
+    //private void Update()
+    //{
+    //    if (Input.GetKeyDown(KeyCode.Escape))
+    //    {
+            
+    //    }
+    //}
+
+    public static bool isFocusing;
 
 }
