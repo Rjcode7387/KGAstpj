@@ -87,16 +87,6 @@ public class inputSystemAction : MonoBehaviour
         isReloading = false;
     }
 
-
-    private void OnReload(InputValue value)
-    {
-        print($"OnReload »£√‚ , isPresssed : {value.isPressed}{value.Get<Single>()}");
-        if (isReloading) return;
-
-        rig.weight =0f;
-        isReloading = true;
-        animator.SetTrigger("Reload");
-    }
     public void OnGrenadeEnd()
     {
         isthrowingGrenade = false;

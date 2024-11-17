@@ -12,8 +12,11 @@ public class InputSystemMove : MonoBehaviour
 
     public float walkSpeed;
     public float runSpeed;
+    public float smoothTime;
 
     Vector2 inputValue;
+    Vector2 smoothValue;
+    Vector2 currentVelocity;
 
     public InputActionAsset controlDeFine;
 
@@ -53,8 +56,16 @@ public class InputSystemMove : MonoBehaviour
 
     private void Update()
     {
-        Vector3 inputmoveDir = new Vector3(inputValue.x, 0, inputValue.y)*walkSpeed;
-        Vector3 actualmoveDir = transform.TransformDirection(inputmoveDir);
+        // 부드러운 이동값 계산
+        smoothValue = Vector2.SmoothDamp(
+            smoothValue,           // 현재 값
+            inputValue,           // 목표 값
+            ref currentVelocity,  // 현재 속도
+            smoothTime            // 보간 시간
+        );
+
+        Vector3 smoothMoveDir = new Vector3(smoothValue.x, 0, smoothValue.y) * walkSpeed;
+        Vector3 actualmoveDir = transform.TransformDirection(smoothMoveDir);
 
         charCtrl.Move(actualmoveDir*Time.deltaTime);
 

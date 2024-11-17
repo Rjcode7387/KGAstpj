@@ -13390,6 +13390,14 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 9a3397d6-1203-4321-8992-7f4c857035e4
     m_ActionName: Player/Reload[/Keyboard/r]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 785e1e42-da3f-46f4-ab30-4d163443d514
+    m_ActionName: Player/Fire[/Mouse/leftButton]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 7c7d122e-1a96-4847-875a-761529ba9c1c
+    m_ActionName: Player/ThrowGrenade[/Keyboard/g]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -13409,6 +13417,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   walkSpeed: 3
   runSpeed: 7
+  smoothTime: 1
   controlDeFine: {fileID: 0}
 --- !u!114 &308941144
 MonoBehaviour:
