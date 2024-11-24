@@ -4,7 +4,13 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/TurnBattleSystem/Scene/FieldScene.unity
+    guid: 009b3b72f5a567b49905841f003c9767
+  - enabled: 1
+    path: Assets/TurnBattleSystem/Scene/TurnBattleScene.unity
+    guid: ca7484745afa6a946ab6df0c0ac8caa4
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 43348acb716bc69489affbcd00288352, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 69dfd42e85ea4dd4eb11178b837af725, type: 3}
