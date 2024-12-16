@@ -6,11 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/TurnBattleSystem/Scene/FieldScene.unity
-    guid: 009b3b72f5a567b49905841f003c9767
-  - enabled: 1
-    path: Assets/TurnBattleSystem/Scene/TurnBattleScene.unity
-    guid: ca7484745afa6a946ab6df0c0ac8caa4
+    path: Assets/22. TCPSocket/Scenes/Client.unity
+    guid: af71a488afc568c4fb288e6a3a864ab9
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 43348acb716bc69489affbcd00288352, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 69dfd42e85ea4dd4eb11178b837af725, type: 3}
