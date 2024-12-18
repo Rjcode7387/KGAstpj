@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "78933661047",
+    "project_id": "myfirebasetest-9e230",
+    "storage_bucket": "myfirebasetest-9e230.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:78933661047:android:04d7282e08b600d4da3d72",
+        "android_client_info": {
+          "package_name": "com.kyungil.firebasetest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA10J3-u19QnLdtMz9W_Xt8ZdCCN5gri7E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
