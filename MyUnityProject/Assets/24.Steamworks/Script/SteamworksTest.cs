@@ -37,7 +37,18 @@ public class SteamworksTest : MonoBehaviour
         }
         foreach (Friend friend in SteamFriends.GetFriends())
         {
-            
+            SteamImage? friendAvatar = await SteamFriends.GetLargeAvatarAsync(friend.Id);
+            UnityImage friendAvatarImage = Instantiate(imagePrefab, transform);
+
+            if (friendAvatar.HasValue)
+            {
+                friendAvatarImage.sprite = SteamImageToSprite(friendAvatar.Value);
+
+                
+                RectTransform rect = friendAvatarImage.GetComponent<RectTransform>();
+                rect.anchoredPosition = new Vector2(0, -150 * transform.childCount);
+            }
+
         }
 
 
