@@ -23,6 +23,11 @@ public class UIHome : UIPage
     public Button addExpButton;
     public Button addjewelButton;
     public Button rankingButton;
+    public Button messageButton;
+    public Button inviteButton;
+    public Board gameBoard;
+
+    private string messageTarget;
 
     private void Awake()
     {       
@@ -32,6 +37,91 @@ public class UIHome : UIPage
         addExpButton.onClick.AddListener(AddExpButtonClick);
         addjewelButton.onClick.AddListener(AddJewelButtonClick);
         rankingButton.onClick.AddListener(RankingButtonClick);
+        messageButton.onClick.AddListener(MessageButtonClick);
+        inviteButton.onClick.AddListener(InviteButtonClick);
+
+        gameBoard.gameObject.SetActive(false);
+
+       
+
+        
+    }
+    private void Start()
+    {
+        FirebaseManager.instance.onGameStart += GameStart;
+        FirebaseManager.instance.onTurnProcceed += ProccessTurn;
+    }
+
+    Room currentRoom;
+    
+    public void GameStart(Room room,bool isHost)
+    {
+        currentRoom = room;
+        gameBoard.isHost = isHost;
+        gameBoard.gameObject.SetActive(true);
+    }
+    public void ProccessTurn(Turn turn)
+    {
+        gameBoard.turnCount++;
+        //새로운 턴 입력이 추가 될때 마다 호출
+        gameBoard.PlaceMark(turn.isHostTurn,turn.coodinate);
+        if (turn.isHostTurn == gameBoard.isHost)//내턴
+        {
+
+        }
+        else//상대턴
+        {
+            
+        }
+    }
+    private void InviteButtonClick()
+    {
+        var popup = UIManager.Instance.PopupOpen<UIInputFieldPopup>();
+        popup.SetPopup("초대하기", "누구를 초대하시겠습니까?", InviteTarget);
+    }
+    private async void InviteTarget(string target)
+    {
+        Room room = new Room()
+        {
+            host = FirebaseManager.instance.Auth.CurrentUser.UserId,
+            guest = target,
+            state = RoomState.Waiting
+        };
+
+        await FirebaseManager.instance.CreateRoom(room);
+
+        Message message = new Message()
+        {
+            type = MessageType.Invite,
+            sender = FirebaseManager.instance.Auth.CurrentUser.UserId,
+            message = "",
+            sendTime = DateTime.Now.Ticks,
+        };
+         FirebaseManager.instance.MessageToTarget(target, message);
+    }
+
+    private void MessageButtonClick()
+    {
+        var popup = UIManager.Instance.PopupOpen<UIInputFieldPopup>();
+        popup.SetPopup("메시지 보내기", "누구에게 메시지를 보내시겠습니까?", SetMessageTarget);
+    }
+    private void SetMessageTarget(string target)
+    {
+        messageTarget = target;
+        var popup = UIManager.Instance.PopupOpen<UIInputFieldPopup>();
+        popup.SetPopup($"To.{messageTarget}", "뭐라고 메시지를 보내시겠습니까?", MessageToTarget);
+    }
+    private void MessageToTarget(string messageText)
+    {
+        Message message = new Message()
+        {
+            type = MessageType.Message,
+            sender = FirebaseManager.instance.Auth.CurrentUser.UserId,
+            message = messageText,
+            sendTime = DateTime.Now.Ticks
+        }; 
+
+        FirebaseManager.instance.MessageToTarget(messageTarget, message);
     }
     private void RankingButtonClick()
     {
