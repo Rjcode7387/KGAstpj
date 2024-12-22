@@ -47,7 +47,7 @@ public class FirebaseManager : MonoBehaviour
 
     private void OnMessageReceive(object sender, ChildChangedEventArgs args)
     {
-        if (args.DatabaseError == null) // ¿¡·¯ ¾øÀ½
+        if (args.DatabaseError == null) // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         {
             string rawJson = args.Snapshot.GetRawJsonValue();
 
@@ -64,7 +64,7 @@ public class FirebaseManager : MonoBehaviour
                 else if (message.type == MessageType.Invite)
                 {
                     var popup = UIManager.Instance.PopupOpen<UITwoButtonPopup>();
-                    popup.SetPopup("ÃÊ´ëÀå", $"{message.sender}´ÔÀÇ °ÔÀÓ¿¡ Âü°¡ÇÏ½Ã°Ú½À´Ï±î?",
+                    popup.SetPopup("ï¿½Ê´ï¿½ï¿½ï¿½", $"{message.sender}ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ó¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï½Ã°Ú½ï¿½ï¿½Ï±ï¿½?",
                         ok => { if (ok) { JoinRoom(message.sender); } });
                 }
             }
@@ -73,9 +73,9 @@ public class FirebaseManager : MonoBehaviour
             args.Snapshot.Reference.Child("isNew").SetValueAsync(false);
 
         }
-        else                            // ¿¡·¯ ¹ß»ý
+        else                            // ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½
         {
-            print("¿¡·¯ ¹ß»ý!");
+            print("ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½!");
         }
     }
 
@@ -92,6 +92,13 @@ public class FirebaseManager : MonoBehaviour
         await roomRef.SetRawJsonValueAsync(json);
 
         roomRef.Child("state").ValueChanged += OnRoomStateChange;
+
+        Board board = FindObjectOfType<Board>();
+        if (board != null)
+        {
+            board.isHost = true;
+            board.isMyTurn = true;
+        }
     }
 
     private void OnRoomStateChange(object sender, ValueChangedEventArgs e)
@@ -101,7 +108,7 @@ public class FirebaseManager : MonoBehaviour
         int state = int.Parse(value.ToString());
         if (state == 1)
         {
-            //°ÔÀÓ½ºÅ¸Æ®
+            //ï¿½ï¿½ï¿½Ó½ï¿½Å¸Æ®
             onGameStart?.Invoke(currentRoom, true);
             roomRef.Child("turn").ChildAdded += OnTurnAdded;
         }
@@ -111,6 +118,7 @@ public class FirebaseManager : MonoBehaviour
     {
         string json = e.Snapshot.GetRawJsonValue();
         Turn turn = JsonConvert.DeserializeObject<Turn>(json);
+        MonoBehaviour.FindObjectOfType<Board>()?.PlaceMark(turn.isHostTurn, turn.coodinate);
         onTurnProcceed?.Invoke(turn);
     }
 
@@ -137,10 +145,18 @@ public class FirebaseManager : MonoBehaviour
 
         isHost = false;
 
-        await roomRef.Child("stste").SetValueAsync((int)RoomState.Playing);
+        await roomRef.Child("state").SetValueAsync((int)RoomState.Playing);
 
         onGameStart?.Invoke(currentRoom, false);
         roomRef.Child("turn").ChildAdded += OnTurnAdded;
+
+        Board board = FindObjectOfType<Board>();
+        if (board != null)
+        {
+            board.isHost = false;
+            board.isMyTurn = false;  
+           
+        }
     }
     public void MessageToTarget(string target, Message message)
     {
@@ -151,9 +167,9 @@ public class FirebaseManager : MonoBehaviour
     }
     private async void Start()
     {
-        //ÆÄÀÌ¾îº£ÀÌ½º ÃÊ±âÈ­ »óÅÂ Ã¼Å©. ºñµ¿±â(Async)ÇÔ¼öÀÌ¹Ç·Î ¿Ï·áµÉ ¶§ ±îÁö ´ë±â
+        //ï¿½ï¿½ï¿½Ì¾îº£ï¿½Ì½ï¿½ ï¿½Ê±ï¿½È­ ï¿½ï¿½ï¿½ï¿½ Ã¼Å©. ï¿½ñµ¿±ï¿½(Async)ï¿½Ô¼ï¿½ï¿½Ì¹Ç·ï¿½ ï¿½Ï·ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
         DependencyStatus status = await FirebaseApp.CheckAndFixDependenciesAsync();
-        //ÃÊ±âÈ­ ¼º°ø
+        //ï¿½Ê±ï¿½È­ ï¿½ï¿½ï¿½ï¿½
         if (status == DependencyStatus.Available)
         {
             App = FirebaseApp.DefaultInstance;
@@ -167,25 +183,25 @@ public class FirebaseManager : MonoBehaviour
                 print(dummyData.GetRawJsonValue());
             }
         }
-        //ÃÊ±âÈ­ ½ÇÆÐ
+        //ï¿½Ê±ï¿½È­ ï¿½ï¿½ï¿½ï¿½
         else
         {
-            Debug.LogWarning($"ÆÄÀÌ¾îº£ÀÌ½º ÃÊ±âÈ­ ½ÇÆÐ : {status}");
+            Debug.LogWarning($"ï¿½ï¿½ï¿½Ì¾îº£ï¿½Ì½ï¿½ ï¿½Ê±ï¿½È­ ï¿½ï¿½ï¿½ï¿½ : {status}");
         }
     
     }
 
-    //È¸¿ø°¡ÀÔ ÇÔ¼ö
+    //È¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½
     public async void Create(string email, string passwd, Action<FirebaseUser,UserData> callback = null)
     {
         try
         {
             var result = await Auth.CreateUserWithEmailAndPasswordAsync(email, passwd);
 
-            //»ý¼ºµÈ È¸¿øÀÇ database reference¸¦ ¼³Á¤
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È¸ï¿½ï¿½ï¿½ï¿½ database referenceï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             usersRef = DB.GetReference($"users/{result.User.UserId}");
 
-            //È¸¿øÀÇ µ¥ÀÌÅÍ¸¦ database¿¡ »ý¼º
+            //È¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ databaseï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             UserData userData = new UserData(result.User.UserId);
             string userDataJson = JsonConvert.SerializeObject(userData);
 
@@ -207,10 +223,10 @@ public class FirebaseManager : MonoBehaviour
 
             List<UserData> rankingList = new List<UserData>();
 
-            // µ¥ÀÌÅÍ°¡ ÀÖ´ÂÁö È®ÀÎ
+            // ï¿½ï¿½ï¿½ï¿½ï¿½Í°ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ È®ï¿½ï¿½
             if (snapshot != null && snapshot.Exists)
             {
-                // ¿ª¼øÀ¸·Î µ¥ÀÌÅÍ Ã³¸® (³ôÀº ·¹º§ºÎÅÍ)
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
                 foreach (var child in snapshot.Children)
                 {
                     try
@@ -223,19 +239,19 @@ public class FirebaseManager : MonoBehaviour
                             userData.userName = dict["userName"]?.ToString();
                             userData.level = Convert.ToInt32(dict["level"]);
                             userData.exp = Convert.ToInt32(dict["exp"]);
-                            // ÇÊ¿äÇÑ ´Ù¸¥ ÇÊµåµéµµ Ãß°¡...
+                            // ï¿½Ê¿ï¿½ï¿½ï¿½ ï¿½Ù¸ï¿½ ï¿½Êµï¿½éµµ ï¿½ß°ï¿½...
 
                             rankingList.Add(userData);
                         }
                     }
                     catch (Exception e)
                     {
-                        Debug.LogWarning($"µ¥ÀÌÅÍ ÆÄ½Ì ¿À·ù: {e.Message}");
+                        Debug.LogWarning($"ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ä½ï¿½ ï¿½ï¿½ï¿½ï¿½: {e.Message}");
                         continue;
                     }
                 }
 
-                // ·¹º§ ±âÁØ ³»¸²Â÷¼ø Á¤·Ä
+                // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
                 rankingList.Sort((a, b) => b.level.CompareTo(a.level));
             }
 
@@ -243,11 +259,11 @@ public class FirebaseManager : MonoBehaviour
         }
         catch (Exception e)
         {
-            Debug.LogError($"·©Å· Á¶È¸ ½ÇÆÐ: {e.Message}");
+            Debug.LogError($"ï¿½ï¿½Å· ï¿½ï¿½È¸ ï¿½ï¿½ï¿½ï¿½: {e.Message}");
             callback?.Invoke(new List<UserData>());
         }
     }
-    //·Î±×ÀÎ
+    //ï¿½Î±ï¿½ï¿½ï¿½
     public async void SignIn(string email, string passwd, Action<FirebaseUser,UserData> callback = null)
     {
         try
@@ -259,7 +275,7 @@ public class FirebaseManager : MonoBehaviour
             DataSnapshot userDataValues = await usersRef.GetValueAsync();
             UserData userData = null;
             if (userDataValues.Exists)
-            {//DB¿¡ °æ·Î°¡ Á¸ÀçÇÏ´ÂÁö °Ë»ç
+            {//DBï¿½ï¿½ ï¿½ï¿½Î°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ï¿½ï¿½ ï¿½Ë»ï¿½
                 string json = userDataValues.GetRawJsonValue();
                 userData = JsonConvert.DeserializeObject<UserData>(json);  
             
@@ -276,10 +292,10 @@ public class FirebaseManager : MonoBehaviour
             Debug.LogError(e.Message);
         }
     }
-    //À¯Àú Á¤º¸ ¼öÁ¤
+    //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     public async void UpdateUserProfile(string displayName, Action<FirebaseUser> callback = null)
     {
-        //userProfile»ý¼º
+        //userProfileï¿½ï¿½ï¿½ï¿½
         UserProfile profile = new UserProfile() { DisplayName = displayName, PhotoUrl = new Uri("https://picsum.photos/120"), };
         await Auth.CurrentUser.UpdateUserProfileAsync(profile);
 
@@ -314,7 +330,7 @@ public class FirebaseManager : MonoBehaviour
     {
         try
         {
-            // µ¥ÀÌÅÍ¸¦ levelÀ» ±âÁØÀ¸·Î Á¤·ÄÇÏ¿© °¡Á®¿À±â
+            // ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ levelï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             Query query = DB.GetReference("users").OrderByChild("level");
             DataSnapshot snapshot = await query.GetValueAsync();
 

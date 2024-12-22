@@ -59,6 +59,8 @@ public class UIHome : UIPage
         currentRoom = room;
         gameBoard.isHost = isHost;
         gameBoard.gameObject.SetActive(true);
+
+        gameBoard.SetTurn(isHost);
     }
     public void ProccessTurn(Turn turn)
     {
