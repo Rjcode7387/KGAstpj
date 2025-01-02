@@ -8,21 +8,28 @@ public class PlayerController : MonoBehaviourPun,IPunObservable
 {
 	private Rigidbody rb;
     private Animator anim;
-    private Transform pointer; //Ä³¸¯ÅÍ°¡ ÃÄ´Ùº¼ °÷
-    private Transform shotPoint;//Åõ»çÃ¼°¡ »ý¼ºµÉ °÷
+    private Transform pointer; //ìºë¦­í„°ê°€ ì³ë‹¤ë³¼ ê³³
+    private Transform shotPoint;//íˆ¬ì‚¬ì²´ê°€ ìƒì„±ë  ê³³
 
 
 
-    private float hp = 100;
+    public float hp = 100;
     private int shotCount = 0;
-    public float moveSpeed; // ÀÌµ¿¼Óµµ
-    public float shotPower;// Åõ»çÃ¼ ¹ß»ç Èû
-    
+    public float moveSpeed; 
+    public float shotPower;
 
-    public Text hpText;   //Ã¼·ÂÀ» Ç¥½ÃÇÒ text
-    public Text shotText; // ¹ß»ç È½¼ö¸¦ Ç¥½ÃÇÒ text
+
+    public Text hpText;  //ì²´ë ¥ í‘œì‹œ text
+    public Text shotText; //ë°œì‚¬ íšŸìˆ˜ í‘œì‹œ text
 
     public Bomb bombPrefab;
+
+    private Transform eyes;
+    private float lastActionTime;
+    private const float EYE_DEACTIVATE_DELAY = 1f;
+    private bool isDead = false;
+
+
 
     private void Awake()
     {
@@ -31,6 +38,12 @@ public class PlayerController : MonoBehaviourPun,IPunObservable
         pointer = transform.Find("PlayerPointer");
         shotPoint = transform.Find("ShotPoint");
         tag = photonView.IsMine ? "Player" : "Enemy";
+        eyes = transform.Find("Renderer/Eyes");
+
+        if (eyes != null)
+        {
+            eyes.gameObject.SetActive(false);
+        }
     }
 
     private void Update()
@@ -46,6 +59,27 @@ public class PlayerController : MonoBehaviourPun,IPunObservable
             photonView.RPC("Fire", RpcTarget.All, shotPoint.position, shotPoint.forward);
             shotCount++;
             
+        }
+        if (photonView.IsMine)
+        {
+            if (Input.GetAxis("Horizontal") != 0 ||
+                Input.GetAxis("Vertical") != 0 ||
+                Input.GetButtonDown("Fire1"))
+            {
+                photonView.RPC("ActivateEyes", RpcTarget.All);
+            }
+
+            if (eyes != null && eyes.gameObject.activeSelf &&
+                Time.time > lastActionTime + EYE_DEACTIVATE_DELAY)
+            {
+                photonView.RPC("DeactivateEyes", RpcTarget.All);
+            }
+        }
+        if (!isDead && hp <= 0)
+        {
+            isDead = true;
+            photonView.RPC("Die", RpcTarget.All);
+            GameManager.Instance.CheckWinCondition();
         }
     }
 
@@ -83,9 +117,10 @@ public class PlayerController : MonoBehaviourPun,IPunObservable
         hp += amount;
         
     }
+ 
 
-    //Fire¸¦ ÅëÇØ¼­ »ý¼ºÇÏ´Â bomb °´Ã¼´Â "µ¥µå·¹Ä¿´×" (ÃßÃøÇ×¹ý ¾Ë°í¸®Áò)À»ÅëÇØ¼­ °¢ Å¬¶óÀÌ¾ðÆ®µéÀÌ
-    //Á÷Á¢ »ý¼ºÇÏ°í, Fire ÇÔ¼ö¸¦ È£Ãâ ¹Þ´Â ½ÃÁ¡À» ¿Â¶óÀÎ¿¡¼­ ¿ø°ÝÀ¸·Î È£Ãâ¹ÞÀ½(Remote Procedyre Call)
+    //Fireë¥¼ í†µí•´ì„œ ìƒì„±í•˜ëŠ” bombê°ì²´ëŠ” "ë°ë“œë ˆì»¤ë‹"(ì¶”ì¸¡í•­ë²• ì•Œê³ ë¦¬ì¦˜)ì„ í†µí•´ì„œ
+    //ê° í´ë¼ì´ì–¸íŠ¸ë“¤ì´ ì§ì ‘ ìƒì„±í•˜ê³ , Fireí•¨ìˆ˜ë¥¼ í˜¸ì¶œ ë°›ëŠ” ì‹œì ì„ ì˜¨ë¼ì¸ìœ¼ë¡œ í˜¸ì¶œë°›ìŒ.(Remote Procedure Call)
     [PunRPC]
     private void Fire(Vector3 shotPoint, Vector3 shotDir, PhotonMessageInfo info)
     {
@@ -93,26 +128,27 @@ public class PlayerController : MonoBehaviourPun,IPunObservable
         print($"my local time : {PhotonNetwork.Time}");
         print($"server time when procedure called : {info.SentServerTime}");
 
-        //"Áö¿¬º¸»ó" : (ÃßÃøÇ×¹ýÀ» À§ÇØ) rpc¸¦ ¹ÞÀº ½ÃÁ¡Àº ¼­¹ö¿¡¼­ È£ÃâµÈ ½Ã°£º¸´Ù Ç×»ó ´Ê±â ¶§¹®¿¡
-        //ÇØ´ç Áö¿¬½Ã°£ ¸¸Å­ À§Ä¡, ¶Ç´Â ¿¬»ê·®À» º¸Á¤ÇØÁÖ¾î¾ß ÃÖ´ëÇÑ ¿ø°æ¿¡¼­ÀÇ ÇÃ·¹ÀÌ°¡ µ¿±âÈ­µÉ ¼ö ÀÖÀ½.
+        //"ì§€ì—°ë³´ìƒ" : (ì¶”ì¸¡í•­ë²•ì„ ìœ„í•´) RPCë¥¼ ë°›ì€ ì‹œì ì€ ì„œë²„ì—ì„œ í˜¸ì¶œëœ ì‹œê°„ë³´ë‹¤ í•­ìƒ ëŠ¦ê¸° ë•Œë¬¸ì—,
+        //í•´ë‹¹ ì§€ì—°ì‹œê°„ë§Œí¼ ìœ„ì¹˜, ë˜ëŠ” ì—°ì‚°ëŸ‰ì„ ë³´ì •í•´ì£¼ì–´ì•¼ ìµœëŒ€í•œ ì›ê²©ì—ì„œì˜ í”Œë ˆì´ê°€ ë™ê¸°í™”ë  ìˆ˜ ìžˆìŒ.
 
-        //º¸Á¾ÇØ¾ß ÇÒ Áö¿¬½Ã°£
+        //ë³´ì •í•´ì•¼ í•  ì§€ì—°ì‹œê°„
         float lag = (float)(PhotonNetwork.Time - info.SentServerTime);
 
         Bomb bomb = Instantiate(bombPrefab, shotPoint, Quaternion.identity);
         bomb.rb.AddForce(shotDir * shotPower,ForceMode.Impulse);
         bomb.owner = photonView.Owner;
 
-        //Áö¿¬º¸»óµé¾î°£´Ù
+        
         bomb.rb.position += bomb.rb.velocity * lag;
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
-        //streamÀ» ÅëÇØ ÁÖ°í ¹Þ´Â µ¥ÀÌÅÍ´Â server¿¡¼­ ¹Þ´Â ½Ã°£ ±âÁØÀ¸·Î queueÇüÅÂ·Î Àü´ÞµÈ´Ù.
+        //Streamì„ í†µí•´ ì£¼ê³ ë°›ëŠ” ë°ì´í„°ëŠ” Serverì—ì„œ ë°›ëŠ” ì‹œê°„ ê¸°ì¤€ìœ¼ë¡œ Queueí˜•íƒœë¡œ ì „ë‹¬
+        //ë°ì´í„° ìžì²´ë„ í
         if (stream.IsWriting)
         {
-            //³» µ¥ÀÌÅÍ¸¦ server·Î º¸³¿
+            //ë‚´ ë°ì´í„°ë¥¼ Serverë¡œ ë³´ëƒ„
             stream.SendNext(hp);
             stream.SendNext(shotCount);
         }
@@ -121,5 +157,31 @@ public class PlayerController : MonoBehaviourPun,IPunObservable
             hp = (float)stream.ReceiveNext();
             shotCount = (int)stream.ReceiveNext();
         }
+    }
+
+    [PunRPC]
+    private void ActivateEyes()
+    {
+        if (eyes != null)
+        {
+            eyes.gameObject.SetActive(true);
+            lastActionTime = Time.time;
+        }
+    }
+
+    [PunRPC]
+    private void DeactivateEyes()
+    {
+        if (eyes != null)
+        {
+            eyes.gameObject.SetActive(false);
+        }
+    }
+    [PunRPC]
+    private void Die()
+    {
+        
+        enabled = false; 
+       
     }
 }

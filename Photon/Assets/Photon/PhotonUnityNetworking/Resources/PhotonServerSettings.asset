@@ -39,6 +39,9 @@ MonoBehaviour:
   - DestroyRpc
   - DestroySpaceship
   - RespawnSpaceship
+  - ActivateEyes
+  - DeactivateEyes
+  - Die
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

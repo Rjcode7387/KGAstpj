@@ -8,48 +8,67 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
     public Transform playerPosition;
-    public static bool isGameReady;
+    public static bool isGameReady = false;
+    private bool isGameOver = false;
+
 
 
     private void Awake()
     {
         Instance = this;
     }
-    //photon¿¡¼­ ÄÁÆ®·Ñ µ¿±âÈ­ ÇÏ´Â ¹æ¹ı
-    //1. ÇÁ¸®Æé¿¡photonview ÄÄÆ÷³ÍÆ®¸¦ ºÙÀÌ°í , photonNetwork.Instantiate¸¦ ÅëÇØ ¿ø°İ Å¬¶óÀÌ¾ğÆ®µé¿¡°Ôµµ 
-    //µ¿±âÈ­µÈ ¿ÀºêÁ§Æ®¸¦ »ı¼ºÇÏµµ·Ï ÇÔ.
-    //2. photonview°¡ observing ÇÒ¼ö ÀÖµµ·Ï view ÄÄÆ÷³ÍÆ®¸¦ ºÎÅ¹
-    //3.
+    //Photonì—ì„œ ì»¨íŠ¸ë¡¤ ë™ê¸°í™” í•˜ëŠ” ë°©ë²•
+
+    //1. í”„ë¦¬íŒ¹ì— PhotonView ì»´í¬ë„ŒíŠ¸ë¥¼ ë¶™ì´ê³ ,
+    //PhotonNetwork.Instantiateë¥¼ í†µí•´
+    //ì›ê²© í´ë¼ì´ì–¸íŠ¸ì—ê²Œë„ ë™ê¸°í™”ëœ ì˜¤ë¸Œì íŠ¸ë¥¼ ìƒì„±í•˜ë„ë¡ í•¨.
+
+    //2. PhotonViewê°€ Observingí•  ìˆ˜ ìˆë„ë¡ View ì»´í¬ë„ŒíŠ¸ë¥¼ ë¶€ì°©.
+
+    //3. ë‚´ Viewê°€ ë¶€ì°©ë˜ì§€ ì•Šì€ ì˜¤ë¸Œì íŠ¸ëŠ” ë‚´ê°€ ì œì–´í•˜ì§€ ì•Šë„ë¡ ì˜ˆì™¸ì²˜ë¦¬ë¥¼ ë°˜ë“œì‹œ í•  ê²ƒ.
+
 
 
     private IEnumerator Start()
     {
+        while (PhotonNetwork.CurrentRoom.PlayerCount != PhotonNetwork.PlayerList.Length)
+        {
+            yield return null;
+        }
+
+        isGameReady = true;
+
         yield return new WaitUntil(() => isGameReady);
         yield return new WaitForSeconds(1f);
-
-        //GetPlayerNumber È®ÀåÇÔ¼ö : Æ÷Åæ ³×Æ®¿öÅ©¿¡ ¿¬°áµÈ ´Ù¸¥ ÇÃ·¹ÀÌ¾îµé »çÀÌ¿¡ µ¿±âÈ­ µÈ ÇÃ·¹ÀÌ¾î 
-        //¹øÈ£. acter number¿Í ´Ù¸§.(scene¸¶´Ù ¼±Âø¼øÀ¸·Î 0~ÇÃ·¹ÀÌ¾î ¼ö¸¸Å­ ºÎ¿©µÊ)
-        //GetPlayerNumber È®ÀåÇÔ¼ö°¡ µ¿ÀÛÇÏ±â À§ÇØ¼­´Â ¾À¿¡ playerNumbering ÄÄÆ÷³ÍÆ®°¡ ÇÊ¿äÇÏ´Ù.
+        //GetPlayerNumber í™•ì¥í•¨ìˆ˜ :
+        //í¬í†¤ ë„¤íŠ¸ì›Œí¬ì— ì—°ê²°ëœ ë‹¤ë¥¸ í”Œë ˆì´ì–´ë“¤ ì‚¬ì´ì—ì„œ ë™ê¸°í™”ëœ í”Œë ˆì´ì–´ ë²ˆí˜¸.
+        //Actor Numberì™€ ë‹¤ë¦„.(Sceneë§ˆë‹¤ ì„ ì°©ìˆœìœ¼ë¡œ 0~í”Œë ˆì´ì–´ ìˆ˜ë§Œí¼ ë¶€ì—¬ë¨.)
+        //GetPlayerNumber í™•ì¥í•¨ìˆ˜ê°€ ë™ì‘í•˜ê¸° ìœ„í•´ì„œëŠ” ì”¬ì—
+        //PlayerNumbering ì»´í¬ë„ŒíŠ¸ê°€ í•„ìš”í•˜ë‹¤.
         int playerNumber = PhotonNetwork.LocalPlayer.GetPlayerNumber();
         Vector3 playerPos = playerPosition.GetChild(playerNumber).position;
+
+
+
         GameObject playerObj = PhotonNetwork.Instantiate("Player", playerPos, Quaternion.identity);
         playerObj.name = $"Player {playerNumber}";
 
 
-        //ÀÌ ¹Ø¿¡¼­´Â ³»°¡ MasterClient°¡ ¾Æ´Ï¸é µ¿ÀÛÇÏÁö ¾ÈÈï¤±
+        //ì´ ë°‘ì—ì„œëŠ” ë‚´ê°€ MasterClientê°€ ì•„ë‹ˆë©´ ë™ì‘í•˜ì§€ ì•ŠìŒ
         if (false == PhotonNetwork.IsMasterClient)
         {
             yield break;
         }
-        //Master Client¸¸ 5ÃÊ¸º PillÀ» PhotonNetwork¸¦ ÅëÇØ Instantiate.
+        //Master Clientë§Œ 5ì´ˆë§ˆë‹¤ .Pillì„ PhotonNetworkë¥¼ í†µí•´ Instantiate.
         while (true)
         {
-            //PhotonNetwork.Instantiate¸¦ ÅëÇØ »ı¼ºÇÒ °æ¿ì, position°ú rotationÀÌ ¹İµå½Ã ÇÊ¿ä
+            //PhotonNetwork.Instantiateë¥¼ í†µí•´ ìƒì„±í•  ê²½ìš°,
+            //positionê³¼ rotationì´ ë°˜ë“œì‹œ í•„ìš”.
             Vector3 spawnPos = Random.insideUnitSphere * 15;
             spawnPos.y = 0;
             Quaternion spawnRot = Quaternion.Euler(0, Random.Range(0, 180f),0);
 
-            //°¢ pill¸¶´Ù random color(color)¿Í random healAmount(float)¸¦ ÁÖÀÔÇÏ°í½ÍÀ¸¸é?
+            //ê° Pillë§ˆë‹¤ Random color(Color)ì™€ Random healAmount(float)ë¥¼ ì£¼ì…í•˜ê³  ì‹¶ìœ¼ë©´?
 
             Vector3 color = new Vector3(Random.value, Random.value, Random.value);
             float healAmount = Random.Range(10f, 30f);
@@ -61,5 +80,32 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(5f);
         }
 
+    }
+
+    public void CheckWinCondition()
+    {
+        if (isGameOver) return;
+
+        // ì‚´ì•„ìˆëŠ” í”Œë ˆì´ì–´ ìˆ˜ í™•ì¸
+        int alivePlayers = 0;
+        PlayerController lastAlivePlayer = null;
+
+        PlayerController[] players = FindObjectsOfType<PlayerController>();
+        foreach (PlayerController player in players)
+        {
+            if (player.hp > 0)
+            {
+                alivePlayers++;
+                lastAlivePlayer = player;
+            }
+        }
+
+        // ë§ˆì§€ë§‰ í•œ ëª…ì´ ë‚¨ì•˜ë‹¤ë©´ ìŠ¹ë¦¬
+        if (alivePlayers == 1)
+        {
+            isGameOver = true;
+            string winnerName = lastAlivePlayer.photonView.IsMine ? "ë‹¹ì‹ " : $"Player {lastAlivePlayer.photonView.Owner.ActorNumber}";
+            LogManager.Log($"ê²Œì„ ì¢…ë£Œ! {winnerName}ì˜ ìŠ¹ë¦¬!");
+        }
     }
 }
